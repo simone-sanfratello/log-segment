@@ -1,0 +1,35 @@
+{
+  "name": "log-part",
+  "version": "1.0.0",
+  "description": "logger with partition",
+  "main": "main.js",
+  "dependencies": {
+    "pino": "x",
+    "colors": "x"
+  },
+  "devDependencies": {
+    "standard": "x",
+    "istanbul": "x"
+  },
+  "engines": {
+    "node": ">4.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simone-sanfratello/node-log-part.git"
+  },
+  "keywords": [
+    "log",
+    "partition",
+    "logger"
+  ],
+  "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/simone-sanfratello/node-log-part/issues"
+  },
+  "homepage": "https://github.com/simone-sanfratello/node-log-part#readme"
+}
