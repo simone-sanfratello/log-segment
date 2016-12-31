@@ -1,5 +1,5 @@
 {
-  "name": "log-part",
+  "name": "log-segment",
   "version": "1.0.0",
   "description": "logger with partition",
   "main": "main.js",
@@ -9,17 +9,19 @@
   },
   "devDependencies": {
     "standard": "x",
+    "chai": "x",
+    "mocha": "x",
     "istanbul": "x"
   },
   "engines": {
     "node": ">4.x"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simone-sanfratello/node-log-part.git"
+    "url": "git+https://github.com/simone-sanfratello/node-log-segment.git"
   },
   "keywords": [
     "log",
@@ -29,7 +31,7 @@
   "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/simone-sanfratello/node-log-part/issues"
+    "url": "https://github.com/simone-sanfratello/node-log-segment/issues"
   },
-  "homepage": "https://github.com/simone-sanfratello/node-log-part#readme"
+  "homepage": "https://github.com/simone-sanfratello/node-log-segment#readme"
 }
