@@ -12,7 +12,40 @@ const should = chai.should()
 
 const log = require('../main')
 
-const config = {
+const segments = {
+  http: {
+    color: 'yellow'
+  },
+  sql: {
+    color: 'green'
+  }
+}
+
+const levels = {
+  info: {
+    color: 'blue',
+    marker: 'ℹ️'
+  },
+  success: {
+    color: 'green',
+    marker: '✔' // ✔ ✔️
+  },
+  warning: {
+    color: 'yellow',
+    marker: '❗️️'
+  },
+  error: {
+    color: 'red',
+    marker: '✗️'
+  }
+}
+
+log.set({
+  segments: segments,
+  levels: levels
+})
+
+const enabled = {
   dev: {
     segments: [ 'http', 'sql' ],
     levels: [ 'error', 'warning', 'info', 'success' ]
@@ -29,16 +62,17 @@ const config = {
     segments: null,
     levels: null
   }
-
 }
 
 describe('log', () => {
-  for (const env in config) {
+  for (const env in enabled) {
     describe(env, () => {
       before(function () {
         log.set({
-          segments: config.dev.segments,
-          levels: config.dev.levels
+          enabled: {
+            segments: enabled[env].segments,
+            levels: enabled[env].levels
+          }
         })
       })
 
