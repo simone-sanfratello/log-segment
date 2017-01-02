@@ -1,13 +1,10 @@
 'use strict'
 
-// https://github.com/pinojs/pino/blob/master/docs/API.md
-const pino = require('pino')
 const tools = require('a-toolbox')
 const colors = require('colors')
 
 /**
- * @todo format, pino settings
- * api
+ * @todo params.format
  */
 const Log = function (params) {
   let __levels = {
@@ -28,27 +25,16 @@ const Log = function (params) {
       marker: '✗️'
     }
   }
+  let __format
   let __segments = {}
   let __markers = {}
-  let __pino
 
   const __enabled = {
     segments: '*',
     levels: '*'
   }
 
-  // @todo format pino - segment.color
-  const __format = function(a,b,c) {
-    console.log('pino format', a)
-  }
-
   const __init = function (params) {
-    __pino = pino({
-      // @todo pino.settings
-    }, __format)
-    __pino.addLevel('segment', 1)
-    __pino.level = 'segment'
-
     set(params)
   }
 
@@ -64,10 +50,15 @@ const Log = function (params) {
       __setLevels(params.levels)
     }
     if (params.enabled) {
-      if (params.enabled.segments) {
+      if (params.enabled.segments === null) {
+        __enabled.segments = []
+      } else {
         __enabled.segments = params.enabled.segments
       }
-      if (params.enabled.levels) {
+
+      if (params.enabled.levels === null) {
+        __enabled.levels = []
+      } else {
         __enabled.levels = params.enabled.levels
       }
     }
@@ -85,7 +76,11 @@ const Log = function (params) {
       let _level = __levels[i]
       Log.prototype[i] = __print(i)
       // cache markers
-      __markers[i] = colors[_level.color](_level.marker)
+      if (_level.marker) {
+        if (_level.color && colors[_level.color]) {
+          __markers[i] = colors[_level.color](_level.marker)
+        }
+      }
     }
   }
 
@@ -94,18 +89,38 @@ const Log = function (params) {
       if (!__check(segment, level)) {
         return false
       }
-      const _args = Array.prototype.slice.call(arguments)
-      tools.array.insert(_args, 1, __markers[level])
-      __pino.segment.apply(__pino, _args)
+      let _args = Array.prototype.slice.call(arguments)
+
+      // add segment color
+      if (__segments[segment].color) {
+        _args = _args.map((message) => {
+          if(!colors[__segments[segment].color]) {
+            console.log('missing color', __segments[segment].color)
+          }
+          return colors[__segments[segment].color](message)
+        })
+      }
+
+      // add marker
+      if (__levels[level].marker) {
+        tools.array.insert(_args, 1, __markers[level])
+      }
+
+      // @todo transport for each level
+      // console, file, stream, email (telegram, sms ...)
+      // @todo format
+      console.log.apply(console, _args)
+      return true
     }
   }
 
   const __check = function (segment, level) {
-    return (segment === '*' ||
+    return (__segments[segment] && __levels[level]) &&
+      (segment === '*' ||
       __enabled.segments === '*' ||
-      __enabled.segments.indexOf(segment) !== -1) &&
+      tools.array.contains(__enabled.segments, segment)) &&
       (__enabled.levels === '*' ||
-      __enabled.levels.indexOf(level) !== -1)
+      tools.array.contains(__enabled.levels, level))
   }
 
   __init(params)

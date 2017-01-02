@@ -1,7 +1,6 @@
 # log-segment
 
-Javascript logger with partition  
-based on [pino](https://github.com/pinojs/pino)
+Node.js logger with partition  
 
 [![NPM Version](http://img.shields.io/npm/v/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)
 [![NPM Downloads](https://img.shields.io/npm/dm/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)

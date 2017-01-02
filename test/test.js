@@ -2,8 +2,8 @@
 
 const chai = require('chai')
 const assert = chai.assert
-const expect = chai.expect
-const should = chai.should()
+// const expect = chai.expect
+// const should = chai.should()
 
 // http://www.zsoltnagy.eu/writing-automated-tests-with-mocha-and-chai/
 // https://mochajs.org/#assertions
@@ -11,15 +11,21 @@ const should = chai.should()
 const log = require('../main')
 
 const segments = {
+  '*': {
+    color: 'white'
+  },
   http: {
-    color: 'yellow'
+    color: 'cyan'
   },
   sql: {
-    color: 'green'
+    color: 'magenta'
   }
 }
 
 const levels = {
+  '*': {
+    color: 'white'
+  },
   info: {
     color: 'blue',
     marker: 'ℹ️'
@@ -47,37 +53,73 @@ const enabled = {
   dev: {
     segments: [ 'http', 'sql' ],
     levels: [ 'error', 'warning', 'info', 'success' ]
+/*
+},
+beta: {
+  segments: [ 'http' ],
+  levels: [ 'error', 'success' ]
+/*  },
+all: {
+  segments: '*',
+  levels: '*'
+},
+none: {
+  segments: null,
+  levels: null
+*/  }
+}
+
+const samples = [
+  {
+    segment: '*',
+    message: 'message: the sun is shining'
   },
-  beta: {
-    segments: [ 'http' ],
-    levels: [ 'error', 'success' ]
+  {
+    segment: 'db',
+    message: 'connected to db'
   },
-  all: {
-    segments: '*',
-    levels: '*'
+  {
+    segment: 'sql',
+    message: 'INSERT INTO (...) '
   },
-  none: {
-    segments: null,
-    levels: null
+  {
+    segment: 'http',
+    message: '/api/user/123'
+  },
+  {
+    segment: 'unknown',
+    message: 'doh'
   }
+]
+
+const result = function (env, level, segment) {
+  try {
+    return (segment === '*' ||
+      enabled[env].segments === '*' ||
+      enabled[env].segments.indexOf(segment) !== -1) &&
+      (enabled[env].levels === '*' ||
+      enabled[env].levels.indexOf(level) !== -1)
+  } catch(e) {}
+  return false
 }
 
 describe('log', () => {
   for (const env in enabled) {
-    describe(env, () => {
-      log.set({
-        enabled: {
-          segments: enabled[env].segments,
-          levels: enabled[env].levels
-        }
+    describe(`env = ${env}`, () => {
+      beforeEach(() => {
+        log.set({
+          enabled: {
+            segments: enabled[env].segments,
+            levels: enabled[env].levels
+          }
+        })
       })
 
       log.levels.forEach(function (level) {
         it(`print ${level}`, function () {
-          log[level]('*', 'message: the sun is shining')
-          log[level]('db', 'connected to db')
-          log[level]('sql', 'INSERT INTO (...) ')
-          log[level]('http', '/api/user/123')
+          samples.forEach((sample) => {
+            assert.isOk(log[level](sample.segment, sample.message) == result(env, level, sample.segment))
+          })
         })
       })
     })
