@@ -30,22 +30,25 @@ const Log = function (params) {
   }
   let __segments = {}
   let __markers = {}
-  let _pino
+  let __pino
 
   const __enabled = {
     segments: '*',
     levels: '*'
   }
 
-  const __init = function (params) {
-    __pino = pino()
-    __pino.addLevel('segment', 1)
-    __pino.level = 1
-    /*
-    __pino.pretty({ formatter: function(a,b,c) {
+  // @todo format pino - segment.color
+  const __format = function(a,b,c) {
+    console.log('pino format', a)
+  }
 
-    } })
-    */
+  const __init = function (params) {
+    __pino = pino({
+      // @todo pino.settings
+    }, __format)
+    __pino.addLevel('segment', 1)
+    __pino.level = 'segment'
+
     set(params)
   }
 
@@ -94,7 +97,6 @@ const Log = function (params) {
       const _args = Array.prototype.slice.call(arguments)
       tools.array.insert(_args, 1, __markers[level])
       __pino.segment.apply(__pino, _args)
-      // @todo format pino - segment.color
     }
   }
 
