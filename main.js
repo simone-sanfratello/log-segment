@@ -1,10 +1,15 @@
 'use strict'
 
 // https://github.com/pinojs/pino/blob/master/docs/API.md
-const pino = require('pino')()
+const pino = require('pino')
+const tools = require('a-toolbox')
 const colors = require('colors')
 
-const log = function (params) {
+/**
+ * @todo format, pino settings
+ * api
+ */
+const Log = function (params) {
   let __levels = {
     info: {
       color: 'blue',
@@ -23,19 +28,37 @@ const log = function (params) {
       marker: '✗️'
     }
   }
-  let __segments = []
+  let __segments = {}
+  let __markers = {}
+  let _pino
 
   const __enabled = {
     segments: '*',
     levels: '*'
   }
 
+  const __init = function (params) {
+    __pino = pino()
+    __pino.addLevel('segment', 1)
+    __pino.level = 1
+    /*
+    __pino.pretty({ formatter: function(a,b,c) {
+
+    } })
+    */
+    set(params)
+  }
+
   const set = function (params) {
+    if (!params) {
+      return
+    }
+
     if (params.segments) {
       __segments = params.segments
     }
     if (params.levels) {
-      __levels = params.levels
+      __setLevels(params.levels)
     }
     if (params.enabled) {
       if (params.enabled.segments) {
@@ -43,57 +66,54 @@ const log = function (params) {
       }
       if (params.enabled.levels) {
         __enabled.levels = params.enabled.levels
-        __pinoSync()
       }
     }
   }
 
-  const __pinoSync = function() {
-    pino.level = 1
-    // remove all levels
-    /*
-    for(const _level in pino.levels) {
-      pino.removeLevel(_level)
+  const __setLevels = function (levels) {
+    // remove current levels
+    for (const i in __levels) {
+      delete Log.prototype[i]
     }
-    */
-    // add levels
-    pino.addLevel(level, i*10)
+    // set new levels
+    __levels = levels
+    __markers = {}
+    for (const i in __levels) {
+      let _level = __levels[i]
+      Log.prototype[i] = __print(i)
+      // cache markers
+      __markers[i] = colors[_level.color](_level.marker)
+    }
   }
 
-  /*
-      MARKER_SUCCESS = colors.green(MARKER_SUCCESS)
-      MARKER_ERROR = colors.red(MARKER_ERROR)
-      MARKER_INFO = colors.blue(MARKER_INFO)
-      MARKER_WARNING = colors.yellow(MARKER_WARNING)
-  */
-
+  const __print = function (level) {
+    return function (segment) {
+      if (!__check(segment, level)) {
+        return false
+      }
+      const _args = Array.prototype.slice.call(arguments)
+      tools.array.insert(_args, 1, __markers[level])
+      __pino.segment.apply(__pino, _args)
+      // @todo format pino - segment.color
+    }
+  }
 
   const __check = function (segment, level) {
-    return (__enabled.segments === '*' || __enabled.segments.indexOf(segment) !== -1) &&
-      (__levels === '*' || __enabled.levels.indexOf(level) !== -1)
+    return (segment === '*' ||
+      __enabled.segments === '*' ||
+      __enabled.segments.indexOf(segment) !== -1) &&
+      (__enabled.levels === '*' ||
+      __enabled.levels.indexOf(level) !== -1)
   }
 
-/*
-  const __print = function (segment, level) {
-    __check(segment, level)
-    const _args = Array.prototype.slice.call(arguments)
-  }
+  __init(params)
 
-  const info = function () {
-    const _args = Array.prototype.slice.call(arguments)
-    _args[1] = MARKER_INFO
-    // pino.warn.apply(console, _args)
-    __print(__segment(_args), 'info')
-  }
-*/
-
-  set(params)
-
-  return {
-    set: set
-  }
+  Object.defineProperty(Log.prototype, 'levels', {
+    get: function () { return Object.keys(__levels) }
+  })
+  Log.prototype.set = set
 }
 
-const _log = log()
+const log = new Log()
 
-module.exports = _log
+module.exports = log

@@ -5,6 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "pino": "x",
+    "a-toolbox": "x",
     "colors": "x"
   },
   "devDependencies": {

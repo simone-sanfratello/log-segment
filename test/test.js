@@ -1,11 +1,9 @@
 'use strict'
 
-/*
 const chai = require('chai')
 const assert = chai.assert
 const expect = chai.expect
 const should = chai.should()
-*/
 
 // http://www.zsoltnagy.eu/writing-automated-tests-with-mocha-and-chai/
 // https://mochajs.org/#assertions
@@ -67,18 +65,16 @@ const enabled = {
 describe('log', () => {
   for (const env in enabled) {
     describe(env, () => {
-      before(function () {
-        log.set({
-          enabled: {
-            segments: enabled[env].segments,
-            levels: enabled[env].levels
-          }
-        })
+      log.set({
+        enabled: {
+          segments: enabled[env].segments,
+          levels: enabled[env].levels
+        }
       })
 
-      log.levels().forEach(function (level) {
+      log.levels.forEach(function (level) {
         it(`print ${level}`, function () {
-          log[level]('message: the sun is shining')
+          log[level]('*', 'message: the sun is shining')
           log[level]('db', 'connected to db')
           log[level]('sql', 'INSERT INTO (...) ')
           log[level]('http', '/api/user/123')
