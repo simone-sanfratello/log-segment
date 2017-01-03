@@ -5,19 +5,20 @@
   "main": "main.js",
   "dependencies": {
     "a-toolbox": "x",
-    "colors": "x"
+    "chalk": "x"
   },
   "devDependencies": {
     "standard": "x",
-    "chai": "x",
-    "mocha": "x",
-    "istanbul": "x"
+    "tap": "x"
   },
   "engines": {
     "node": ">4.x"
   },
   "scripts": {
-    "test": "mocha test/"
+    "_test-mocha": "mocha test/",
+    "test": "standard && tap test/*",
+    "test-cov": "standard && tap test/* --cov",
+    "ci": "standard && tap --cov test/*test.js"
   },
   "repository": {
     "type": "git",

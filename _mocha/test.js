@@ -1,15 +1,23 @@
 'use strict'
 
-const tap = require('tap')
+/*
+const chai = require('chai')
+const assert = chai.assert
+// const expect = chai.expect
+// const should = chai.should()
 
-const log = require('../main')
+// http://www.zsoltnagy.eu/writing-automated-tests-with-mocha-and-chai/
+// https://mochajs.org/#assertions
+
+/*
+const log = require('../../main')
 
 const segments = {
   '*': {
-    // color: 'white'
+    color: 'white'
   },
   http: {
-    color: 'orange'
+    color: 'cyan'
   },
   sql: {
     color: 'magenta'
@@ -33,7 +41,7 @@ const levels = {
     marker: '❗️️'
   },
   error: {
-    // color: 'red',
+    color: 'red',
     marker: '✗️'
   }
 }
@@ -96,21 +104,26 @@ const result = function (env, level, segment) {
   return false
 }
 
-for (const env in enabled) {
-  log.set({
-    enabled: {
-      segments: enabled[env].segments,
-      levels: enabled[env].levels
-    }
-  })
+describe('log', () => {
+  for (const env in enabled) {
+    describe(`env = ${env}`, () => {
+      beforeEach(() => {
+        log.set({
+          enabled: {
+            segments: enabled[env].segments,
+            levels: enabled[env].levels
+          }
+        })
+      })
 
-  log.levels.forEach(function (level) {
-    samples.forEach((sample) => {
-      tap.test(`log for ${env} ${level}`, (test) => {
-        test.plan(1)
-        let _print = log[level](sample.segment, sample.message)
-        test.equal(_print, result(env, level, sample.segment))
+      log.levels.forEach(function (level) {
+        it(`print ${level}`, function () {
+          samples.forEach((sample) => {
+            assert.isOk(log[level](sample.segment, sample.message) == result(env, level, sample.segment))
+          })
+        })
       })
     })
-  })
-}
+  }
+})
+*/

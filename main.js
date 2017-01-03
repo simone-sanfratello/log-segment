@@ -1,13 +1,20 @@
 'use strict'
 
 const tools = require('a-toolbox')
-const colors = require('colors')
+const chalk = require('chalk')
+
+// @todo transport for each level
+// console, file, stream, email (telegram, sms ...)
+// @todo format
 
 /**
  * @todo params.format
  */
 const Log = function (params) {
   let __levels = {
+    '*': {
+      color: 'white'
+    },
     info: {
       color: 'blue',
       marker: 'ℹ️'
@@ -25,8 +32,8 @@ const Log = function (params) {
       marker: '✗️'
     }
   }
-  let __format
-  let __segments = {}
+  let __segments = {'*': { color: 'white' }}
+
   let __markers = {}
 
   const __enabled = {
@@ -77,8 +84,10 @@ const Log = function (params) {
       Log.prototype[i] = __print(i)
       // cache markers
       if (_level.marker) {
-        if (_level.color && colors[_level.color]) {
-          __markers[i] = colors[_level.color](_level.marker)
+        if (_level.color && chalk[_level.color]) {
+          __markers[i] = chalk[_level.color](_level.marker)
+        } else {
+          __markers[i] = _level.marker
         }
       }
     }
@@ -92,18 +101,19 @@ const Log = function (params) {
       let _args = Array.prototype.slice.call(arguments)
 
       // add segment color
-      if (__segments[segment].color) {
+      if (__segments[segment] && __segments[segment].color) {
         _args = _args.map((message) => {
-          if(!colors[__segments[segment].color]) {
-            console.log('missing color', __segments[segment].color)
+          if (chalk[__segments[segment].color]) {
+            return chalk[__segments[segment].color](message)
+          } else {
+            return message
           }
-          return colors[__segments[segment].color](message)
         })
       }
 
       // add marker
       if (__levels[level].marker) {
-        tools.array.insert(_args, 1, __markers[level])
+        _args.unshift(__markers[level])
       }
 
       // @todo transport for each level
@@ -115,11 +125,10 @@ const Log = function (params) {
   }
 
   const __check = function (segment, level) {
-    return (__segments[segment] && __levels[level]) &&
-      (segment === '*' ||
+    return ((segment === '*') ||
       __enabled.segments === '*' ||
       tools.array.contains(__enabled.segments, segment)) &&
-      (__enabled.levels === '*' ||
+      ((__enabled.levels === '*') ||
       tools.array.contains(__enabled.levels, level))
   }
 

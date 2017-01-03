@@ -1,5 +1,10 @@
 *.log
 
 /node_modules/
+
+# coverage report
 /coverage/
+/.nyc*
+
+
 
