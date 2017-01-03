@@ -11,6 +11,16 @@ Node.js logger with partition
 
 ## w.i.p.
 
+### TODO
+
+timestamp, chrono
+custom format
+api docs
+browser version
+npm publish
+
+transporter: pino, npmlog, winston, log
+
 ## License
 
 The MIT License (MIT)
