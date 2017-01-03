@@ -4,12 +4,13 @@
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
-    "a-toolbox": "x",
-    "chalk": "x"
+    "a-toolbox": "^x",
+    "chalk": "^x"
   },
   "devDependencies": {
-    "standard": "x",
-    "tap": "x"
+    "standard": "^x",
+    "pre-commit": "^1.2.2",
+    "tap": "^x"
   },
   "engines": {
     "node": ">4.x"
