@@ -50,7 +50,6 @@ const Log = function (params) {
       return
     }
 
-
     if (params.segments) {
       __segments = params.segments
     }

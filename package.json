@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "standard": "^x",
-    "pre-commit": "^1.2.2",
+    "pre-commit": "^x",
     "tap": "^x"
   },
   "engines": {
