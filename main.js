@@ -52,6 +52,12 @@ const Log = function (params) {
 
     if (params.segments) {
       __segments = params.segments
+      for (const i in __segments) {
+        let _segment = __segments[i]
+        if (!chalk[_segment.color]) {
+          console.warn('log-segment, unknown color', _segment.color, 'for segment', i)
+        }
+      }
     }
     if (params.levels) {
       __setLevels(params.levels)
@@ -84,6 +90,10 @@ const Log = function (params) {
       Log.prototype[i] = __print(i)
       // cache markers
       if (_level.marker) {
+        if (!chalk[_level.color]) {
+          console.warn('log-segment, unknown color', _level.color, 'for level', i)
+        }
+
         if (_level.color && chalk[_level.color]) {
           __markers[i] = chalk[_level.color](_level.marker)
         } else {
@@ -135,7 +145,13 @@ const Log = function (params) {
   __init(params)
 
   Object.defineProperty(Log.prototype, 'levels', {
-    get: function () { return Object.keys(__levels) }
+    get: function () { return Object.assign({}, __levels) }
+  })
+  Object.defineProperty(Log.prototype, 'segments', {
+    get: function () { return Object.assign({}, __segments) }
+  })
+  Object.defineProperty(Log.prototype, 'enabled', {
+    get: function () { return Object.assign({}, __enabled) }
   })
   Log.prototype.set = set
 }
