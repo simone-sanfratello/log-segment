@@ -42,7 +42,7 @@ const Log = function (params) {
   }
 
   const __init = function (params) {
-    set(params)
+    __setLevels(__levels)
   }
 
   const set = function (params) {
