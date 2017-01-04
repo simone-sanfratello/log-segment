@@ -9,32 +9,33 @@ Node.js logger with partition
 
 [![NPM](https://nodei.co/npm-dl/log-segment.png)](https://nodei.co/npm/log-segment/)
 
-## Why another logger tool?
+### Description
 
-The target of this tool is to have a lightweight togger to quickly enable and disable segments and levels.  
-Also provide a custom transport for level and segment. 
+````log-segment```` provide a lightweight logger full customizable to quickly enable and disable segments and levels.
 
-I want to go fast -> use pino
-I want to be cool -> use npmlog
+### Install
 
-## Example
+npm install log-segment --save
+
+### Usage
 ...
 
 ## API
 ...
 
-### TODO / Roadmap
+### Roadmap
 
-- timestamp, chrono
+- add message info: trace, timestamp, chrono
 - custom format
-- custom transport by segment and level: console, file, stream, email (sms, telegram...)
-- browser version
-- npm publish
-- ? support workers (as transport)
-  - pino
-  - npmlog
-  - winston
-  - log
+- custom transport by segment and level: console, file, stream, email (sms, telegram and whatever)
+- browser support
+- (evaluate) support workers (as transport)
+  - [pino](https://github.com/pinojs/pino)
+  - [npmlog](https://github.com/npm/npmlog)
+  - [winston](https://github.com/winstonjs/winston)
+  - [log](https://github.com/tj/log.js)
+  - [debug](https://github.com/visionmedia/debug)
+  - others?
 
 ## License
 
