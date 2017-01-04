@@ -15,7 +15,9 @@ Node.js logger with partition
 
 ### Install
 
+````bash
 npm install log-segment --save
+````
 
 ### Usage
 
