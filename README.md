@@ -18,9 +18,62 @@ Node.js logger with partition
 npm install log-segment --save
 
 ### Usage
-...
 
-## API
+#### Default
+
+````js
+const log = require('log-segment')
+log.info('*', 'info message')
+log.success('*', 'success message')
+log.warning('*', 'warning message')
+log.error('*', 'error message')
+````
+
+output
+(attach screenshot)
+
+<!--
+#### Customize
+
+````js
+const log = require('log-segment')
+log.set({
+  segments: {
+    http: {
+      color: 'white'
+    },
+    sql: {
+      color: 'magenta'
+    }
+  },
+  levels: {
+    info: {
+      color: 'blue',
+      marker: 'ℹ️'
+    },
+    success: {
+      color: 'green',
+      marker: '✔'
+    },
+    warning: {
+      color: 'yellow',
+      marker: '❗️️'
+    },
+    error: {
+      color: 'red',
+      marker: '✗️'
+    }
+  }
+})
+
+log.info('*', 'info message')
+log.success('*', 'success message')
+log.warning('*', 'warning message')
+log.error('*', 'error message')
+````
+-->
+
+### API
 ...
 
 ### Roadmap
