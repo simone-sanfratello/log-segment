@@ -81,7 +81,7 @@ log.error('*', 'error message')
 - add message info: trace, timestamp, chrono
 - custom format
 - custom transport by segment and level: console, file, stream, email (sms, telegram and whatever)
-- browser support
+- browser support (browserify)
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)
