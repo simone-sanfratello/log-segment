@@ -1,6 +1,6 @@
 {
   "name": "log-segment",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
@@ -16,7 +16,6 @@
     "node": ">4.x"
   },
   "scripts": {
-    "_test-mocha": "mocha test/",
     "test": "standard && tap test/*",
     "test-cov": "standard && tap test/* --cov",
     "ci": "standard && tap --cov test/*test.js"

@@ -4,28 +4,7 @@ const tap = require('tap')
 
 const log = require('../main')
 
-const samples = [
-  {
-    segment: '*',
-    message: 'message: the sun is shining'
-  },
-  {
-    segment: 'db',
-    message: 'connected to db'
-  },
-  {
-    segment: 'sql',
-    message: 'INSERT INTO (...) '
-  },
-  {
-    segment: 'http',
-    message: '/api/user/123'
-  },
-  {
-    segment: 'unknown',
-    message: 'doh'
-  }
-]
+const samples = require('./samples/sample.json')
 
 let segments, levels, enabled, scenarios
 
