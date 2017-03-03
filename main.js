@@ -51,17 +51,13 @@ const Log = function (params) {
     }
 
     if (params.segments) {
-      __segments = params.segments
-      for (const i in __segments) {
-        let _segment = __segments[i]
-        if (!chalk[_segment.color]) {
-          console.warn('log-segment, unknown color', _segment.color, 'for segment', i)
-        }
-      }
+      __setSegments(params.segments)
     }
+
     if (params.levels) {
       __setLevels(params.levels)
     }
+
     if (params.enabled) {
       if (params.enabled.segments === null) {
         __enabled.segments = []
@@ -77,16 +73,59 @@ const Log = function (params) {
     }
   }
 
+  /**
+   * add segment: if already exists, override
+   * add level: if already exists, override
+   */
+  const add = function (params) {
+    if (!params) {
+      return
+    }
+
+    if (params.segments) {
+      __addSegments(params.segments)
+    }
+    if (params.levels) {
+      __addLevels(params.levels)
+    }
+  }
+
+  const __setSegments = function (segments) {
+    __segments = {}
+    __addSegments(segments)
+  }
+
+  const __addSegments = function (segments) {
+    for (const i in segments) {
+      if (__segments[i]) {
+        console.warn('log-segment, override segment', i)
+      }
+      let _segment = segments[i]
+      if (!chalk[_segment.color]) {
+        console.warn('log-segment, unknown color', _segment.color, 'for segment', i)
+      }
+      __segments[i] = _segment
+    }
+  }
+
   const __setLevels = function (levels) {
     // remove current levels
     for (const i in __levels) {
       delete Log.prototype[i]
     }
     // set new levels
-    __levels = levels
     __markers = {}
-    for (const i in __levels) {
-      let _level = __levels[i]
+    __levels = {}
+    __addLevels(levels)
+  }
+
+  const __addLevels = function (levels) {
+    for (const i in levels) {
+      let _level = levels[i]
+      if (__levels[i]) {
+        delete Log.prototype[i]
+        console.warn('log-segment, override level', i)
+      }
       Log.prototype[i] = __print(i)
       // cache markers
       if (_level.marker) {
@@ -100,6 +139,7 @@ const Log = function (params) {
           __markers[i] = _level.marker
         }
       }
+      __levels[i] = _level
     }
   }
 
@@ -154,6 +194,7 @@ const Log = function (params) {
     get: function () { return Object.assign({}, __enabled) }
   })
   Log.prototype.set = set
+  Log.prototype.add = add
 }
 
 const log = new Log()

@@ -1,5 +1,7 @@
 'use strict'
-
+/**
+ * @todo test add funciton: segments, levels
+ */
 const tap = require('tap')
 
 const log = require('../main')
