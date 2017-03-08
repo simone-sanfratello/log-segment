@@ -90,6 +90,16 @@ const Log = function (params) {
     }
   }
 
+  const value = function (label, value) {
+    return function () {
+      if (typeof value === 'object') {
+        return `[${label}=${JSON.stringify(value)}]`
+      } else {
+        return `[${label}=${value}]`
+      }
+    }
+  }
+
   const __setSegments = function (segments) {
     __segments = {}
     __addSegments(segments)
@@ -156,6 +166,8 @@ const Log = function (params) {
           // stringify an object
           if (typeof message === 'object') {
             message = JSON.stringify(message)
+          } else if (typeof message === 'function') {
+            message = message()
           }
           // paint the message
           if (chalk[__segments[segment].color]) {
@@ -200,6 +212,7 @@ const Log = function (params) {
   })
   Log.prototype.set = set
   Log.prototype.add = add
+  Log.prototype.value = value
 }
 
 const log = new Log()
