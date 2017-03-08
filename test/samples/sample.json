@@ -4,6 +4,10 @@
     "message": "message: the sun is shining"
   },
   {
+    "segment": "*",
+    "message": { "error": "something wrong" }
+  },
+  {
     "segment": "db",
     "message": "connected to db"
   },
