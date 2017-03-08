@@ -153,6 +153,11 @@ const Log = function (params) {
       // add segment color
       if (__segments[segment] && __segments[segment].color) {
         _args = _args.map((message) => {
+          // stringify an object
+          if (typeof message === 'object') {
+            message = JSON.stringify(message)
+          }
+          // paint the message
           if (chalk[__segments[segment].color]) {
             return chalk[__segments[segment].color](message)
           } else {
