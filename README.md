@@ -93,6 +93,8 @@ log.error('*', 'error message')
   - [debug](https://github.com/visionmedia/debug)
   - others?
 
+---
+
 ## License
 
 The MIT License (MIT)
