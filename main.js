@@ -212,7 +212,7 @@ const Log = function (params) {
   })
   Log.prototype.set = set
   Log.prototype.add = add
-  Log.prototype.value = value
+  Log.prototype.value = Log.prototype.val = Log.prototype.v = value
 }
 
 const log = new Log()

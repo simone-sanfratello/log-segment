@@ -81,7 +81,8 @@ log.error('*', 'error message')
 ### Roadmap
 
 - add message info: trace, timestamp, chrono
-- custom format
+- custom format in message
+- custom format in log.value
 - custom transport by segment and level: console, file, stream, email (sms, telegram and whatever)
 - browser support (browserify)
 - (evaluate) support workers (as transport)
