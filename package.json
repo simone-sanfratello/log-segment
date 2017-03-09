@@ -15,6 +15,9 @@
   "engines": {
     "node": ">4.x"
   },
+  "files": [
+    "main.js"
+  ],
   "scripts": {
     "test": "standard && tap test/*",
     "test-cov": "standard && tap test/* --cov",
