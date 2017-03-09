@@ -1,6 +1,6 @@
 {
   "name": "log-segment",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
@@ -30,9 +30,5 @@
     "logger"
   ],
   "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/simone-sanfratello/node-log-segment/issues"
-  },
-  "homepage": "https://github.com/simone-sanfratello/node-log-segment#readme"
+  "license": "MIT"
 }
