@@ -32,7 +32,7 @@ const Log = function (params) {
       marker: '✗️'
     },
     panic: {
-      color: 'purple',
+      color: 'magenta',
       marker: '😱' // ☠'
     }
   }
