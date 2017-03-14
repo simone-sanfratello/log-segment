@@ -30,6 +30,10 @@ const Log = function (params) {
     error: {
       color: 'red',
       marker: '✗️'
+    },
+    panic: {
+      color: 'purple',
+      marker: '😱' // ☠'
     }
   }
   let __segments = {'*': { color: 'white' }}
