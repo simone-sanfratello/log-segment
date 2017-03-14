@@ -162,25 +162,24 @@ const Log = function (params) {
       if (!__check(segment, level)) {
         return false
       }
-      let _args = Array.prototype.slice.call(arguments)
 
-      // add segment color
-      if (__segments[segment] && __segments[segment].color) {
-        _args = _args.map((message) => {
-          // stringify an object
-          if (typeof message === 'object') {
-            message = JSON.stringify(message)
-          } else if (typeof message === 'function') {
-            message = message()
-          }
-          // paint the message
-          if (chalk[__segments[segment].color]) {
-            return chalk[__segments[segment].color](message)
-          } else {
-            return message
-          }
-        })
-      }
+      let _args = Array.prototype.slice.call(arguments)
+      _args = _args.map((message) => {
+        // stringify an object
+        if (typeof message === 'object') {
+          message = JSON.stringify(message)
+        } else if (typeof message === 'function') {
+          message = message()
+        }
+        // add segment color
+        // paint the message
+        if (__segments[segment] &&
+          __segments[segment].color &&
+          chalk[__segments[segment].color]) {
+          return chalk[__segments[segment].color](message)
+        }
+        return message
+      })
 
       // add marker
       if (__levels[level].marker) {
