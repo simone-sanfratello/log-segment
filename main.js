@@ -97,7 +97,11 @@ const Log = function (params) {
   const value = function (label, value) {
     return function () {
       if (typeof value === 'object') {
-        return `[${label}=${JSON.stringify(value)}]`
+        try {
+          return `[${label}=${JSON.stringify(value)}]`
+        } catch (e) {
+          return `[${label}=INVALID-JSON]`
+        }
       } else {
         return `[${label}=${value}]`
       }
@@ -167,7 +171,11 @@ const Log = function (params) {
       _args = _args.map((message) => {
         // stringify an object
         if (typeof message === 'object') {
-          message = JSON.stringify(message)
+          try {
+            message = JSON.stringify(message)
+          } catch (e) {
+            message = 'INVALID-JSON'
+          }
         } else if (typeof message === 'function') {
           message = message()
         }
