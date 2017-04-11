@@ -29,6 +29,7 @@ log.info('*', 'info message')
 log.success('*', 'success message')
 log.warning('*', 'warning message')
 log.error('*', 'error message')
+log.panic('*', 'panic message')
 ````
 
 output
@@ -84,7 +85,7 @@ log.error('*', 'error message')
 - custom format in message
 - custom format in log.value
 - custom transport by segment and level: console, file, stream, email (sms, telegram and whatever)
-- browser support (browserify)
+- browser support (browserify?)
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)

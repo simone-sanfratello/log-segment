@@ -2,15 +2,25 @@
 
 const tools = require('a-toolbox')
 const chalk = require('chalk')
+const fs = require('fs')
 
 // @todo transport for each level
 // console, file, stream, email (telegram, sms ...)
-// @todo format
+// @todo custom format messages
+
+const mode = {
+  CONSOLE: 0,
+  FILE: 1
+// STREAM
+// EMAIL
+// OTHERS (telegram, sms ...)
+}
 
 /**
  * @todo params.format
  */
 const Log = function (params) {
+  // default console
   let __levels = {
     '*': {
       color: 'white'
@@ -38,18 +48,24 @@ const Log = function (params) {
   }
   let __segments = {'*': { color: 'white' }}
 
-  let __markers = {}
+  let __markers
 
   const __enabled = {
     segments: '*',
     levels: '*'
   }
 
-  const __init = function (params) {
+  /**
+   * files stream.Writable
+   */
+  const __files = {}
+
+  function __init (params) {
+    __markers = {}
     __setLevels(__levels)
   }
 
-  const set = function (params) {
+  function set (params) {
     if (!params) {
       return
     }
@@ -81,7 +97,7 @@ const Log = function (params) {
    * add segment: if already exists, override
    * add level: if already exists, override
    */
-  const add = function (params) {
+  function add (params) {
     if (!params) {
       return
     }
@@ -94,7 +110,7 @@ const Log = function (params) {
     }
   }
 
-  const value = function (label, value) {
+  function value (label, value) {
     return function () {
       if (typeof value === 'object') {
         try {
@@ -108,12 +124,12 @@ const Log = function (params) {
     }
   }
 
-  const __setSegments = function (segments) {
+  function __setSegments (segments) {
     __segments = {}
     __addSegments(segments)
   }
 
-  const __addSegments = function (segments) {
+  function __addSegments (segments) {
     for (const i in segments) {
       if (__segments[i]) {
         console.warn('log-segment, override segment', i)
@@ -126,7 +142,7 @@ const Log = function (params) {
     }
   }
 
-  const __setLevels = function (levels) {
+  function __setLevels (levels) {
     // remove current levels
     for (const i in __levels) {
       delete Log.prototype[i]
@@ -137,7 +153,7 @@ const Log = function (params) {
     __addLevels(levels)
   }
 
-  const __addLevels = function (levels) {
+  function __addLevels (levels) {
     for (const i in levels) {
       let _level = levels[i]
       if (__levels[i]) {
@@ -161,20 +177,24 @@ const Log = function (params) {
     }
   }
 
-  const __print = function (level) {
+  /**
+   *
+   * @param {string} level level name
+   */
+  function __print (level) {
     return function (segment) {
       if (!__check(segment, level)) {
         return false
       }
 
-      let _args = Array.prototype.slice.call(arguments)
-      _args = _args.map((message) => {
+      let _data = Array.prototype.slice.call(arguments)
+      _data = _data.map((message) => {
         // stringify an object
         if (typeof message === 'object') {
           try {
             message = JSON.stringify(message)
           } catch (e) {
-            message = 'INVALID-JSON'
+            message = '[INVALID-JSON]'
           }
         } else if (typeof message === 'function') {
           message = message()
@@ -191,18 +211,59 @@ const Log = function (params) {
 
       // add marker
       if (__levels[level].marker) {
-        _args.unshift(__markers[level])
+        _data.unshift(__markers[level])
       }
 
-      // @todo transport for each level
-      // console, file, stream, email (telegram, sms ...)
-      // @todo format
-      console.log.apply(console, _args)
-      return true
+      return __output(segment, level, _data)
     }
   }
 
-  const __check = function (segment, level) {
+  function __output (segment, level, data) {
+    // @todo custom format
+    if (__segments[segment] && __segments[segment].mode === mode.FILE) {
+      return __outputFile(__segments[segment].file, data)
+    }
+    if (__levels[level].mode === mode.FILE) {
+      return __outputFile(__segments[segment].file, data)
+    }
+
+    // mode console
+    console.log.apply(console, data)
+    return true
+  }
+
+  /**
+   * @todo open file err
+   * @param {string} file /path/to/file
+   * @param {string[]} data
+   */
+  function __outputFile (file, data) {
+    // open stream, if not already opened
+    if (!__files[file]) {
+      __files[file] = fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'})
+
+      /* debug
+      __files[file].on('finish', function () {
+        console.log('file has been written')
+      })
+      __files[file].on('open', function () {
+        console.log('file has been open')
+      })
+      */
+
+      process.on('beforeExit', () => {
+        if (__files[file]) {
+          __files[file].end()
+          __files[file] = null
+        }
+      })
+    }
+
+    data.push('\n')
+    return __files[file].write(data.join(' '))
+  }
+
+  function __check (segment, level) {
     return ((segment === '*') ||
       __enabled.segments === '*' ||
       tools.array.contains(__enabled.segments, segment)) &&
@@ -213,17 +274,25 @@ const Log = function (params) {
   __init(params)
 
   Object.defineProperty(Log.prototype, 'levels', {
-    get: function () { return Object.assign({}, __levels) }
+    get: () => {
+      return Object.assign({}, __levels)
+    }
   })
   Object.defineProperty(Log.prototype, 'segments', {
-    get: function () { return Object.assign({}, __segments) }
+    get: () => {
+      return Object.assign({}, __segments)
+    }
   })
   Object.defineProperty(Log.prototype, 'enabled', {
-    get: function () { return Object.assign({}, __enabled) }
+    get: () => {
+      return Object.assign({}, __enabled)
+    }
   })
   Log.prototype.set = set
   Log.prototype.add = add
   Log.prototype.value = Log.prototype.val = Log.prototype.v = value
+
+  Log.prototype.mode = mode
 }
 
 const log = new Log()

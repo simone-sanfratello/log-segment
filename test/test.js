@@ -49,7 +49,9 @@ segments = {
     color: 'cyan'
   },
   sql: {
-    color: 'magenta'
+    color: 'magenta',
+    mode: log.mode.FILE,
+    file: '/tmp/log-segment-test.log'
   }
 }
 
