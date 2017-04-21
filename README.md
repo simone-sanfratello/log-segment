@@ -76,6 +76,32 @@ log.error('*', 'error message')
 ````
 -->
 
+WHY
+
+user cases
+
+enable segments in dev or debug to focus to specific program part
+and disable all the rest
+
+different behaviour for each level
+  divide error for each type, info, error
+  panic -> email, push notification, call 911
+
+trace specific part to specific file, example sql
+
+one point settings to rule them all
+
+level
+* unknow level, or empty
+
+
+mode
+
+if segment is file, output only to this file
+if level is file, output only to this file
+
+else write to console
+
 ### API
 ...
 

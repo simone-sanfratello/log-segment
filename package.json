@@ -4,8 +4,9 @@
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
-    "a-toolbox": "^x",
-    "chalk": "^x"
+    "a-toolbox": "^0.1.x",
+    "chalk": "^1.x",
+    "nodemailer": "^4.x"
   },
   "devDependencies": {
     "standard": "^x",
@@ -13,7 +14,7 @@
     "tap": "^x"
   },
   "engines": {
-    "node": ">4.x"
+    "node": ">6.x"
   },
   "files": [
     "main.js"

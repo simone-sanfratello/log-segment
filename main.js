@@ -2,7 +2,7 @@
 
 const tools = require('a-toolbox')
 const chalk = require('chalk')
-const fs = require('fs')
+const fs = require('fs-extra')
 
 // @todo transport for each level
 // console, file, stream, email (telegram, sms ...)
@@ -10,7 +10,8 @@ const fs = require('fs')
 
 const mode = {
   CONSOLE: 0,
-  FILE: 1
+  FILE: 1,
+  EMAIL: 2
 // STREAM
 // EMAIL
 // OTHERS (telegram, sms ...)
@@ -135,9 +136,7 @@ const Log = function (params) {
         console.warn('log-segment, override segment', i)
       }
       let _segment = segments[i]
-      if (!chalk[_segment.color]) {
-        console.warn('log-segment, unknown color', _segment.color, 'for segment', i)
-      }
+      __checkSetting(_segment, 'segment')
       __segments[i] = _segment
     }
   }
@@ -161,12 +160,9 @@ const Log = function (params) {
         console.warn('log-segment, override level', i)
       }
       Log.prototype[i] = __print(i)
+      __checkSetting(_level, 'level')
       // cache markers
       if (_level.marker) {
-        if (!chalk[_level.color]) {
-          console.warn('log-segment, unknown color', _level.color, 'for level', i)
-        }
-
         if (_level.color && chalk[_level.color]) {
           __markers[i] = chalk[_level.color](_level.marker)
         } else {
@@ -174,6 +170,23 @@ const Log = function (params) {
         }
       }
       __levels[i] = _level
+    }
+  }
+
+  function __checkSetting (setting, part) {
+    switch (setting.mode) {
+      case mode.FILE:
+        if (!setting.file) {
+          console.warn('log-segment, mode is FILE but no file specified for', part, 'fallback to console')
+          setting.mode = mode.CONSOLE
+        }
+        break
+      case mode.CONSOLE:
+      default:
+        if (setting.color && !chalk[setting.color]) {
+          console.warn('log-segment, unknown color', setting.color, 'for', part)
+        }
+        break
     }
   }
 
@@ -224,7 +237,7 @@ const Log = function (params) {
       return __outputFile(__segments[segment].file, data)
     }
     if (__levels[level].mode === mode.FILE) {
-      return __outputFile(__segments[segment].file, data)
+      return __outputFile(__levels[level].file, data)
     }
 
     // mode console
@@ -240,29 +253,38 @@ const Log = function (params) {
   function __outputFile (file, data) {
     // open stream, if not already opened
     if (!__files[file]) {
-      __files[file] = fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'})
-
-      /* debug
-      __files[file].on('finish', function () {
-        console.log('file has been written')
-      })
-      __files[file].on('open', function () {
-        console.log('file has been open')
-      })
-      */
-
-      process.on('beforeExit', () => {
-        if (__files[file]) {
-          __files[file].end()
-          __files[file] = null
+      fs.ensureFile(file, (err) => {
+        if (err) {
+          throw new Error('unable to write', file)
         }
+        __files[file] = fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'})
+        __outputFile(file, data)
+        /* debug
+        __files[file].on('finish', function () {
+          console.log('file has been written')
+        })
+        __files[file].on('open', function () {
+          console.log('file has been open')
+        })
+        */
+
+        process.on('beforeExit', () => {
+          if (__files[file]) {
+            __files[file].end()
+          }
+        })
       })
+      return
     }
 
     data.push('\n')
     return __files[file].write(data.join(' '))
   }
 
+  /**
+   * @param {string} segment
+   * @param {string} level
+   */
   function __check (segment, level) {
     return ((segment === '*') ||
       __enabled.segments === '*' ||
