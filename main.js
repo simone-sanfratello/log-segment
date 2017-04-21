@@ -146,6 +146,8 @@ const Log = function (params) {
     for (const i in __levels) {
       delete Log.prototype[i]
     }
+    // clear file streams
+    __resetFiles()
     // set new levels
     __markers = {}
     __levels = {}
@@ -257,8 +259,15 @@ const Log = function (params) {
         if (err) {
           throw new Error('unable to write', file)
         }
-        __files[file] = fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'})
-        __outputFile(file, data)
+        __files[file] = {
+          stream: fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'}),
+          beforeExit: () => {
+            if (__files[file].stream) {
+              __files[file].stream.end()
+            }
+          }
+        }
+        process.on('beforeExit', __files[file].beforeExit)
         /* debug
         __files[file].on('finish', function () {
           console.log('file has been written')
@@ -267,18 +276,22 @@ const Log = function (params) {
           console.log('file has been open')
         })
         */
-
-        process.on('beforeExit', () => {
-          if (__files[file]) {
-            __files[file].end()
-          }
-        })
+        __outputFile(file, data)
       })
-      return
+      return true
     }
 
     data.push('\n')
-    return __files[file].write(data.join(' '))
+    __files[file].stream.write(data.join(' '))
+    return true
+  }
+
+  function __resetFiles () {
+    for (const _file in __files) {
+      __files[_file].stream.end()
+      process.removeListener('beforeExit', __files[_file].beforeExit)
+      delete __files[_file]
+    }
   }
 
   /**

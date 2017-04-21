@@ -6,6 +6,7 @@
   "dependencies": {
     "a-toolbox": "^0.1.x",
     "chalk": "^1.x",
+    "fs-extra": "^2.x",
     "nodemailer": "^4.x"
   },
   "devDependencies": {

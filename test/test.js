@@ -28,6 +28,8 @@ const test = function () {
         test.plan(1)
         let _print = log[level](sample.segment, sample.message)
         test.equal(_print, result(level, sample.segment))
+        console.log(level, sample.segment, _print, result(level, sample.segment))
+        log[level](sample.segment, sample.message)
       })
     })
   })
