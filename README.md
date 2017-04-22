@@ -1,116 +1,137 @@
 # log-segment
 
-Node.js logger with partition  
-
 [![NPM Version](http://img.shields.io/npm/v/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)
 [![NPM Downloads](https://img.shields.io/npm/dm/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)
 
-[![JS Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-
 [![NPM](https://nodei.co/npm-dl/log-segment.png)](https://nodei.co/npm/log-segment/)
 
-### Description
+[![JS Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-````log-segment```` provide a lightweight logger full customizable to quickly enable and disable segments and levels.
+Javascript logger with partition  
 
-### Install
+## Purpose
+
+Not all logs are equal.
+The scope is to have an easy way to quickly manage logs by two factors: level and segment.  
+These two factors are fully customizable.  
+
+## Installing
 
 ````bash
-npm install log-segment --save
+$ npm i -g log-segment
 ````
 
-### Usage
+### Quick start
 
-#### Default
+``log-segment`` is single-ton, so just require and use everywhere
 
 ````js
 const log = require('log-segment')
-log.info('*', 'info message')
-log.success('*', 'success message')
-log.warning('*', 'warning message')
-log.error('*', 'error message')
-log.panic('*', 'panic message')
-````
 
-output
-(attach screenshot)
-
-<!--
-#### Customize
-
-````js
-const log = require('log-segment')
-log.set({
-  segments: {
-    http: {
-      color: 'white'
-    },
-    sql: {
-      color: 'magenta'
-    }
-  },
-  levels: {
-    info: {
-      color: 'blue',
-      marker: 'ℹ️'
-    },
-    success: {
-      color: 'green',
-      marker: '✔'
-    },
-    warning: {
-      color: 'yellow',
-      marker: '❗️️'
-    },
-    error: {
-      color: 'red',
-      marker: '✗️'
-    }
-  }
+const sql = 'INSERT INTO table ...'
+log.info('sql', 'executing query ...', log.value('sql', sql))
+db.query(sql)
+.then(() => {
+    log.success('sql', 'query done.', log.value('sql', sql))
 })
-
-log.info('*', 'info message')
-log.success('*', 'success message')
-log.warning('*', 'warning message')
-log.error('*', 'error message')
+.catch((err) => {
+    log.error('sql', 'query error', log.value('sql', sql))
+})
 ````
--->
 
-WHY
+````js
+const log = require('log-segment')
 
-user cases
+require('express')().all('/*', (request, response) => {
+    log.info('http', 'request', request.method, request.baseUrl)
+    
+    doSomething(request)
+    .then((output) => {
+        response.send(output)
+        log.success('http', 'response on request', request.method, request.baseUrl)
+    })
+    .catch((err) => {
+        response.sendStatus(500)
+        log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
+    })
+})
+````
 
-enable segments in dev or debug to focus to specific program part
-and disable all the rest
+![quickstart](./doc/img/quickstart.jpg  "quickstart")
 
-different behaviour for each level
-  divide error for each type, info, error
-  panic -> email, push notification, call 911
+##### Customize levels
 
-trace specific part to specific file, example sql
+````js
+const log = require('log-segment')
 
-one point settings to rule them all
+log.set()
 
-level
-* unknow level, or empty
+// ...
+````
 
+##### Customize segments
 
-mode
+````js
+const log = require('log-segment')
 
-if segment is file, output only to this file
-if level is file, output only to this file
+log.set()
 
-else write to console
+// ...
+````
 
-### API
-...
+### Use Cases
 
-### Roadmap
+Starting from this configuration
+
+````js
+// ... example
+````
+
+**Development**
+Just enable everything on console
+
+````js
+// ... example
+````
+
+**Debug**
+Enable only segments to focus on, at any levels, to find that bug
+
+````js
+// ... example
+````
+
+**Production**
+
+Different behaviour for each level:
+  - disable not interesting parts: success level, template rendering
+  - different file for each type: warning, error, info
+    and remove marks
+  - on panic -> email
+  - separate file of log sql
+
+````js
+// ... example
+````
+
+## Documentation
+
+See [documentation](./doc/README.md) for further informations.
+
+## Changelog
+
+v. 1.1.0
+
+- Add support for mail mode
+
+## TODO
 
 - add message info: trace, timestamp, chrono
 - custom format in message
 - custom format in log.value
-- custom transport by segment and level: console, file, stream, email (sms, telegram and whatever)
+- custom mode: stream, (sms, telegram and whatever)
+- customizable action (example: on error run function)
+- multiple mode for each settings (example: on panic send email, log to file, send sms, call mom)
 - browser support (browserify?)
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
@@ -118,6 +139,8 @@ else write to console
   - [winston](https://github.com/winstonjs/winston)
   - [log](https://github.com/tj/log.js)
   - [debug](https://github.com/visionmedia/debug)
+  - [log](https://github.com/tj/log.js)
+  - [bunyan](https://github.com/trentm/node-bunyan)
   - others?
 
 ---
@@ -126,7 +149,7 @@ else write to console
 
 The MIT License (MIT)
 
-Copyright (c) 2016-2017 Simone Sanfratello
+Copyright (c) 2017, [braces lab](https://braceslab.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

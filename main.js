@@ -114,6 +114,9 @@ const Log = function (params) {
   function value (label, value) {
     return function () {
       if (typeof value === 'object') {
+        if (value instanceof Error) {
+          return value.stack
+        }
         try {
           return `[${label}=${JSON.stringify(value)}]`
         } catch (e) {

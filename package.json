@@ -10,9 +10,7 @@
     "nodemailer": "^4.x"
   },
   "devDependencies": {
-    "standard": "^x",
-    "pre-commit": "^x",
-    "tap": "^x"
+    "pre-commit": "^x"
   },
   "engines": {
     "node": ">6.x"
@@ -34,6 +32,6 @@
     "partition",
     "logger"
   ],
-  "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
+  "author": "Simone Sanfratello <simone@braceslab.com>",
   "license": "MIT"
 }
