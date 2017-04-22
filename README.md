@@ -66,7 +66,7 @@ const log = require('log-segment')
 
 log.set()
 
-// ...
+// todo ... example
 ````
 
 ##### Customize segments
@@ -76,7 +76,7 @@ const log = require('log-segment')
 
 log.set()
 
-// ...
+// todo ... example
 ````
 
 ### Use Cases
@@ -84,21 +84,21 @@ log.set()
 Starting from this configuration
 
 ````js
-// ... example
+// todo ... example
 ````
 
 **Development**
 Just enable everything on console
 
 ````js
-// ... example
+// todo ... example
 ````
 
 **Debug**
 Enable only segments to focus on, at any levels, to find that bug
 
 ````js
-// ... example
+// todo ... example
 ````
 
 **Production**
@@ -111,7 +111,7 @@ Different behaviour for each level:
   - separate file of log sql
 
 ````js
-// ... example
+// todo ... example
 ````
 
 ## Documentation
