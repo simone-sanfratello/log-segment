@@ -3,10 +3,12 @@
 const tools = require('a-toolbox')
 const chalk = require('chalk')
 const fs = require('fs-extra')
+const nodemailer = require('nodemailer')
 
 // @todo transport for each level
 // console, file, stream, email (telegram, sms ...)
 // @todo custom format messages
+// @todo test settings: try to write file, send email
 
 const mode = {
   CONSOLE: 0,
@@ -61,15 +63,17 @@ const Log = function (params) {
    */
   const __files = {}
 
-  function __init (params) {
+  const __init = function (params) {
     __markers = {}
     __setLevels(__levels)
   }
 
-  function set (params) {
+  const set = function (params) {
     if (!params) {
       return
     }
+
+    __reset()
 
     if (params.segments) {
       __setSegments(params.segments)
@@ -95,10 +99,17 @@ const Log = function (params) {
   }
 
   /**
+   * clear file streams
+   */
+  const __reset = function () {
+    __resetFiles()
+  }
+
+  /**
    * add segment: if already exists, override
    * add level: if already exists, override
    */
-  function add (params) {
+  const add = function (params) {
     if (!params) {
       return
     }
@@ -111,7 +122,7 @@ const Log = function (params) {
     }
   }
 
-  function value (label, value) {
+  const value = function (label, value) {
     return function () {
       if (typeof value === 'object') {
         if (value instanceof Error) {
@@ -131,12 +142,12 @@ const Log = function (params) {
     }
   }
 
-  function __setSegments (segments) {
+  const __setSegments = function (segments) {
     __segments = {}
     __addSegments(segments)
   }
 
-  function __addSegments (segments) {
+  const __addSegments = function (segments) {
     for (const i in segments) {
       if (__segments[i]) {
         console.warn('log-segment, override segment', i)
@@ -147,20 +158,18 @@ const Log = function (params) {
     }
   }
 
-  function __setLevels (levels) {
+  const __setLevels = function (levels) {
     // remove current levels
     for (const i in __levels) {
       delete Log.prototype[i]
     }
-    // clear file streams
-    __resetFiles()
     // set new levels
     __markers = {}
     __levels = {}
     __addLevels(levels)
   }
 
-  function __addLevels (levels) {
+  const __addLevels = function (levels) {
     for (const i in levels) {
       let _level = levels[i]
       if (__levels[i]) {
@@ -181,8 +190,14 @@ const Log = function (params) {
     }
   }
 
-  function __checkSetting (setting, part) {
+  const __checkSetting = function (setting, part) {
     switch (setting.mode) {
+      case mode.EMAIL:
+        if (!setting.email) {
+          console.warn('log-segment, mode is EMAIL but email settings missing for', part, 'fallback to console')
+          setting.mode = mode.CONSOLE
+        }
+        break
       case mode.FILE:
         if (!setting.file) {
           console.warn('log-segment, mode is FILE but no file specified for', part, 'fallback to console')
@@ -202,7 +217,7 @@ const Log = function (params) {
    *
    * @param {string} level level name
    */
-  function __print (level) {
+  const __print = function (level) {
     return function (segment) {
       if (!__check(segment, level)) {
         return false
@@ -239,8 +254,19 @@ const Log = function (params) {
     }
   }
 
-  function __output (segment, level, data) {
-    // @todo custom format
+  /**
+   * @todo custom format
+   */
+  const __output = function (segment, level, data) {
+    // email
+    if (__segments[segment] && __segments[segment].mode === mode.EMAIL) {
+      return __outputEmail(__segments[segment].email, data)
+    }
+    if (__levels[level] && __levels[level].mode === mode.EMAIL) {
+      return __outputEmail(__levels[level].email, data)
+    }
+
+    // file
     if (__segments[segment] && __segments[segment].mode === mode.FILE) {
       return __outputFile(__segments[segment].file, data)
     }
@@ -248,7 +274,11 @@ const Log = function (params) {
       return __outputFile(__levels[level].file, data)
     }
 
-    // mode console
+    // console
+    return __outputConsole(data)
+  }
+
+  const __outputConsole = function (data) {
     console.log.apply(console, data)
     return true
   }
@@ -258,7 +288,7 @@ const Log = function (params) {
    * @param {string} file /path/to/file
    * @param {string[]} data
    */
-  function __outputFile (file, data) {
+  const __outputFile = function (file, data) {
     // open stream, if not already opened
     if (!__files[file]) {
       fs.ensureFile(file, (err) => {
@@ -292,7 +322,29 @@ const Log = function (params) {
     return true
   }
 
-  function __resetFiles () {
+  /**
+   * @todo html
+   * @param {*} email
+   * @param {*} data
+   */
+  const __outputEmail = function (email, data) {
+    if (!email._transporter) {
+      email._transporter = nodemailer.createTransport(email.transporter)
+    }
+
+    const _options = Object.assign(email.options)
+    _options.text = data.join('\n')
+
+    email._transporter.sendMail(_options, (err, info) => {
+      if (err) {
+        __outputConsole(['ERROR SENDING EMAIL', _options])
+        __outputConsole([data])
+      }
+    })
+    return true
+  }
+
+  const __resetFiles = function () {
     for (const _file in __files) {
       __files[_file].stream.end()
       process.removeListener('beforeExit', __files[_file].beforeExit)
@@ -304,7 +356,7 @@ const Log = function (params) {
    * @param {string} segment
    * @param {string} level
    */
-  function __check (segment, level) {
+  const __check = function (segment, level) {
     return ((segment === '*') ||
       __enabled.segments === '*' ||
       tools.array.contains(__enabled.segments, segment)) &&

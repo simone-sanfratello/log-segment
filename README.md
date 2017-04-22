@@ -133,6 +133,7 @@ v. 1.1.0
 - customizable action (example: on error run function)
 - multiple mode for each settings (example: on panic send email, log to file, send sms, call mom)
 - browser support (browserify?)
+- .test() test settings: write files, send emails ...
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)

@@ -28,8 +28,8 @@ const test = function () {
         test.plan(1)
         let _print = log[level](sample.segment, sample.message)
         test.equal(_print, result(level, sample.segment))
-        console.log(level, sample.segment, _print, result(level, sample.segment))
-        log[level](sample.segment, sample.message)
+        // console.log(level, sample.segment, _print, result(level, sample.segment))
+        // log[level](sample.segment, sample.message)
       })
     })
   })
@@ -75,6 +75,24 @@ levels = {
   error: {
     color: 'red',
     marker: '✗️'
+  },
+  panic: {
+    color: 'red',
+    mode: log.mode.EMAIL,
+    email: {
+      transporter: {
+        service: 'gmail',
+        auth: {
+          user: '***@gmail.com',
+          pass: '***'
+        }
+      },
+      options: {
+        from: '"log-segment" <log-segment@test.test>',
+        to: 'braceslab0@gmail.com',
+        subject: 'YOUR-APPLICATION: PANIC ERROR'
+      }
+    }
   }
 }
 
@@ -94,6 +112,10 @@ scenarios = {
   none: {
     segments: null,
     levels: null
+  },
+  prod: {
+    segments: [ 'sql' ],
+    levels: [ 'panic' ]
   }
 }
 

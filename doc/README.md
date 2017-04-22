@@ -1,26 +1,32 @@
+# log-segment
 
-API
-
+## API
 
 .set
 
+one point settings to rule them all
+
 .add
 
-
 log.v alias log.val alias log.value
-
+encapsulate to prevent JSON.strigify to the needed point
+may be not be executed
 
 mode:
 
 CONSOLE -> use console log
 FILE -> use fs
+MAIL -> use nodemailer
 
-mode in segment and mode in level
--> if different, use both
+mode
 
+if segment is file, output only to this file
+if level is file, output only to this file
 
-encapsulate to prevent JSON.strigify to the needed point
-may be not be executed
+else write to console
+
+level
+* unknow level, or empty
 
 #### Default
 
@@ -74,21 +80,3 @@ log.success('*', 'success message')
 log.warning('*', 'warning message')
 log.error('*', 'error message')
 ````
-
-
-one point settings to rule them all
-
-level
-* unknow level, or empty
-
-
-mode
-
-if segment is file, output only to this file
-if level is file, output only to this file
-
-else write to console
-
-### API
-...
-
