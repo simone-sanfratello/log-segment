@@ -16,4 +16,3 @@ const err = new Error('file not found')
 
 log.info('http', 'request', request.method, request.baseUrl)
 log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
-

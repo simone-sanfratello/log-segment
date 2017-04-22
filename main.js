@@ -117,6 +117,9 @@ const Log = function (params) {
         if (value instanceof Error) {
           return value.stack
         }
+        if (value instanceof Date) {
+          return value.toISOString()
+        }
         try {
           return `[${label}=${JSON.stringify(value)}]`
         } catch (e) {
