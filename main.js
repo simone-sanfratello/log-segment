@@ -5,18 +5,10 @@ const chalk = require('chalk')
 const fs = require('fs-extra')
 const nodemailer = require('nodemailer')
 
-// @todo transport for each level
-// console, file, stream, email (telegram, sms ...)
-// @todo custom format messages
-// @todo test settings: try to write file, send email
-
 const mode = {
   CONSOLE: 0,
   FILE: 1,
   EMAIL: 2
-// STREAM
-// EMAIL
-// OTHERS (telegram, sms ...)
 }
 
 /**

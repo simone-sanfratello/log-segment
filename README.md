@@ -122,7 +122,7 @@ See [documentation](./doc/README.md) for further informations.
 
 v. 1.1.0
 
-- Add support for mail mode
+- Add support for email mode
 
 ## TODO
 
@@ -130,10 +130,11 @@ v. 1.1.0
 - custom format in message
 - custom format in log.value
 - custom mode: stream, (sms, telegram and whatever)
+- multiple mode for each setting (example: on panic send email, log to file, send sms, call mom)
 - customizable action (example: on error run function)
-- multiple mode for each settings (example: on panic send email, log to file, send sms, call mom)
 - browser support (browserify?)
 - .test() test settings: write files, send emails ...
+- .get() return current settings
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)
