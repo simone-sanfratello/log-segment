@@ -64,7 +64,7 @@ Default settings provide any levels and segments enabled to console output.
 Default levels are: *info, success, warning, error, panic*.  
 There is no hierarchy by levels.
 
-````json
+````js
 { 
   levels: {
      '*': { color: 'white' },
