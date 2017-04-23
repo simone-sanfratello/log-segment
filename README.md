@@ -281,7 +281,6 @@ v. 1.1.0
   - [winston](https://github.com/winstonjs/winston)
   - [log](https://github.com/tj/log.js)
   - [debug](https://github.com/visionmedia/debug)
-  - [log](https://github.com/tj/log.js)
   - [bunyan](https://github.com/trentm/node-bunyan)
   - others?
 
