@@ -22,14 +22,16 @@ const result = function (level, segment) {
 }
 
 const test = function () {
+  console.log('settings', log.get())
+
   Object.keys(log.levels).forEach(function (level) {
     samples.forEach((sample) => {
       tap.test('print', (test) => {
         test.plan(1)
         let _print = log[level](sample.segment, sample.message)
         test.equal(_print, result(level, sample.segment))
-        // console.log(level, sample.segment, _print, result(level, sample.segment))
-        // log[level](sample.segment, sample.message)
+      // console.log(level, sample.segment, _print, result(level, sample.segment))
+      // log[level](sample.segment, sample.message)
       })
     })
   })

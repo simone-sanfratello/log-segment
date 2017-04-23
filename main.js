@@ -12,10 +12,9 @@ const mode = {
 }
 
 /**
- * @todo params.format
+ * @class
  */
 const Log = function (params) {
-  // default console
   let __levels = {
     '*': {
       color: 'white'
@@ -26,7 +25,7 @@ const Log = function (params) {
     },
     success: {
       color: 'green',
-      marker: '✔' // ✔ ✔️
+      marker: '✔'
     },
     warning: {
       color: 'yellow',
@@ -38,7 +37,7 @@ const Log = function (params) {
     },
     panic: {
       color: 'magenta',
-      marker: '😱' // ☠'
+      marker: '😱'
     }
   }
   let __segments = {'*': { color: 'white' }}
@@ -55,11 +54,18 @@ const Log = function (params) {
    */
   const __files = {}
 
+  /**
+   * @constructor
+   * @param {Object} params
+   */
   const __init = function (params) {
     __markers = {}
     __setLevels(__levels)
   }
 
+  /**
+   * @param {Object} params
+   */
   const set = function (params) {
     if (!params) {
       return
@@ -91,10 +97,14 @@ const Log = function (params) {
   }
 
   /**
-   * clear file streams
+   * @return current settings
    */
-  const __reset = function () {
-    __resetFiles()
+  const get = function () {
+    return {
+      levels: Object.assign({}, __levels),
+      segments: Object.assign({}, __segments),
+      enabled: Object.assign({}, __enabled)
+    }
   }
 
   /**
@@ -114,6 +124,10 @@ const Log = function (params) {
     }
   }
 
+  /**
+   * @param {string} label
+   * @param {*} value
+   */
   const value = function (label, value) {
     return function () {
       if (typeof value === 'object') {
@@ -205,6 +219,34 @@ const Log = function (params) {
     }
   }
 
+  const __reset = function () {
+    __resetFiles()
+  }
+
+  /**
+   * clear file streams
+   */
+  const __resetFiles = function () {
+    for (const _file in __files) {
+      __files[_file].stream.end()
+      process.removeListener('beforeExit', __files[_file].onProcessExit)
+      delete __files[_file]
+    }
+  }
+
+  /**
+   * @param {string} segment
+   * @param {string} level
+   * @return bool
+   */
+  const __check = function (segment, level) {
+    return ((segment === '*') ||
+      __enabled.segments === '*' ||
+      tools.array.contains(__enabled.segments, segment)) &&
+      ((__enabled.levels === '*') ||
+      tools.array.contains(__enabled.levels, level))
+  }
+
   /**
    *
    * @param {string} level level name
@@ -276,7 +318,6 @@ const Log = function (params) {
   }
 
   /**
-   * @todo open file err
    * @param {string} file /path/to/file
    * @param {string[]} data
    */
@@ -289,13 +330,13 @@ const Log = function (params) {
         }
         __files[file] = {
           stream: fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'}),
-          beforeExit: () => {
+          onProcessExit: () => {
             if (__files[file].stream) {
               __files[file].stream.end()
             }
           }
         }
-        process.on('beforeExit', __files[file].beforeExit)
+        process.on('beforeExit', __files[file].onProcessExit)
         /* debug
         __files[file].on('finish', function () {
           console.log('file has been written')
@@ -336,26 +377,6 @@ const Log = function (params) {
     return true
   }
 
-  const __resetFiles = function () {
-    for (const _file in __files) {
-      __files[_file].stream.end()
-      process.removeListener('beforeExit', __files[_file].beforeExit)
-      delete __files[_file]
-    }
-  }
-
-  /**
-   * @param {string} segment
-   * @param {string} level
-   */
-  const __check = function (segment, level) {
-    return ((segment === '*') ||
-      __enabled.segments === '*' ||
-      tools.array.contains(__enabled.segments, segment)) &&
-      ((__enabled.levels === '*') ||
-      tools.array.contains(__enabled.levels, level))
-  }
-
   __init(params)
 
   Object.defineProperty(Log.prototype, 'levels', {
@@ -374,6 +395,7 @@ const Log = function (params) {
     }
   })
   Log.prototype.set = set
+  Log.prototype.get = get
   Log.prototype.add = add
   Log.prototype.value = Log.prototype.val = Log.prototype.v = value
 

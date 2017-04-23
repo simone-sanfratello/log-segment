@@ -126,6 +126,7 @@ v. 1.1.0
 
 ## TODO
 
+- .get() return current settings
 - add message info: trace, timestamp, chrono
 - custom format in message
 - custom format in log.value
@@ -134,7 +135,6 @@ v. 1.1.0
 - customizable action (example: on error run function)
 - browser support (browserify?)
 - .test() test settings: write files, send emails ...
-- .get() return current settings
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)

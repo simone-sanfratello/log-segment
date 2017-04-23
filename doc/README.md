@@ -9,6 +9,8 @@
 
 one point settings to rule them all
 
+.get
+
 .add
 
 log.v alias log.val alias log.value
