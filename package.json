@@ -1,6 +1,6 @@
 {
   "name": "log-segment",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
