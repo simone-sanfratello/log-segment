@@ -11,9 +11,8 @@ Javascript logger with partition
 
 ## Purpose
 
-Not all logs are equal.
-The scope is to have an easy way to quickly manage logs by two factors: level and segment.  
-These two factors are fully customizable.  
+Why Another Log Module? Because not all logs are equal.  
+I'd like to use a pliable tool that allow to easy and quickly manage logs by two factors: **level** and **segment**.  
 
 ## Installing
 
@@ -23,7 +22,7 @@ $ npm i -g log-segment
 
 ### Quick start
 
-``log-segment`` is single-ton, so just require and use everywhere
+``log-segment`` is single-ton, so just require and use everywhere.
 
 ````js
 const log = require('log-segment')
@@ -59,59 +58,201 @@ require('express')().all('/*', (request, response) => {
 
 ![quickstart](./doc/img/quickstart.jpg  "quickstart")
 
-##### Customize levels
+#### Default settings
+
+Default settings provide any levels and segments enabled to console output.  
+Default levels are: *info, success, warning, error, panic*.  
+There is no hierarchy by levels.
+
+````json
+{ 
+  levels: {
+     '*': { color: 'white' },
+     info: { color: 'blue', marker: 'ℹ️' },
+     success: { color: 'green', marker: '✔' },
+     warning: { color: 'yellow', marker: '❗️️' },
+     error: { color: 'red', marker: '✗️' },
+     panic: { color: 'magenta', marker: '😱' }
+  },
+  segments: { '*': { color: 'white' } },
+  enabled: { segments: '*', levels: '*' } }
+  ````
+
+##### Custom segments
 
 ````js
 const log = require('log-segment')
 
-log.set()
+log.set({
+  segments: {
+    http: {
+      color: 'cyan'
+    },
+    html: {
+      color: 'magenta'
+    },
+    sql: {
+      mode: log.mode.FILE,
+      file: '/tmp/myapp/sql.log'
+    }
+  }
+})
 
-// todo ... example
+const sql = 'INSERT INTO table ...'
+
+log.info('sql', 'executing query ...', log.value('sql', sql))
+log.success('sql', 'query done.', log.value('sql', sql))
+
+const request = {
+  method: 'GET',
+  baseUrl: '/it/4x/api.html#req'
+}
+
+const err = new Error('file not found')
+
+log.info('http', 'request', request.method, request.baseUrl)
+log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
+
+let username = null
+log.warning('html', 'rendering missing value', log.value('username', username))
+
 ````
 
-##### Customize segments
+![custom segments](./doc/img/custom-segments.jpg  "custom segments")
+
+#### Custom levels
 
 ````js
 const log = require('log-segment')
 
-log.set()
+log.set({
+  segments: {
+    http: {
+      color: 'yellow'
+    },
+    sql: {
+      color: 'white'
+    }
+  },
+  levels: {
+    trace: {
+      marker: '[TRACE]'
+    },
+    warning: {
+      marker: '[WARN]'
+    },
+    error: {
+      marker: '[ERR]'
+    }
+  }
+})
 
-// todo ... example
+
+const sql = 'INSERT INTO table ...'
+
+log.trace('sql', 'executing query ...', log.value('sql', sql))
+log.trace('sql', 'query done.', log.value('sql', sql))
+
+const request = {
+  method: 'GET',
+  baseUrl: '/it/4x/api.html#req'
+}
+
+const err = new Error('file not found')
+
+log.trace('http', 'request', request.method, request.baseUrl)
+log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
+
+let username = null
+log.warning('html', 'rendering missing value', log.value('username', username))
 ````
+
+![custom levels](./doc/img/custom-levels.jpg  "custom levels")
 
 ### Use Cases
 
-Starting from this configuration
-
 ````js
-// todo ... example
+log.set({
+  segments: {
+    http: { color: 'cyan' },
+    network: { color: 'blue' },
+    db: { color: 'yellow' },
+    sql: { }
+  }
+})
 ````
 
 **Development**
 Just enable everything on console
 
 ````js
-// todo ... example
+log.set({ enabled: { segments: '*', levels: '*' } })
 ````
 
 **Debug**
 Enable only segments to focus on, at any levels, to find that bug
 
 ````js
-// todo ... example
+log.set({ enabled: { segments: ['sql', 'network'] } })
 ````
 
 **Production**
 
 Different behaviour for each level:
   - disable not interesting parts: success level, template rendering
-  - different file for each type: warning, error, info
+  - different file for each type: *info, warning, error*
     and remove marks
-  - on panic -> email
-  - separate file of log sql
+  - separate sql file
+  - on panic send email
 
 ````js
-// todo ... example
+log.set({
+  enabled: {
+    segments: ['sql'],
+    levels: ['info', 'warning', 'error', 'panic']
+  },
+  segments: {
+      sql: {
+        mode: log.mode.FILE,
+        file: '/var/log/myapp/sql'
+      }
+  },
+  levels: {
+    info: {
+      marker: '[i]',
+      mode: log.mode.FILE,
+      file: '/var/log/myapp/info'
+    },
+    warning: {
+      marker: '[warn]',
+      mode: log.mode.FILE,
+      file: '/var/log/myapp/warn'
+    },
+    error: {
+      marker: '[err]',
+      mode: log.mode.FILE,
+      file: '/var/log/myapp/error'
+    },
+    panic: {
+      mode: log.mode.MAIL,
+        email: {
+          transporter: {
+            service: 'gmail',
+            auth: {
+              user: '***@gmail.com',
+              pass: '***'
+            }
+          }
+        }
+        options: {
+          from: '"log-segment" <log-segment@test.test>',
+          to: 'sys-admin@gmail.com',
+          subject: 'myapp PANIC'
+        }
+      }
+    }
+  }
+})
 ````
 
 ## Documentation
@@ -126,7 +267,6 @@ v. 1.1.0
 
 ## TODO
 
-- .get() return current settings
 - add message info: trace, timestamp, chrono
 - custom format in message
 - custom format in log.value

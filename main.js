@@ -54,6 +54,10 @@ const Log = function (params) {
    */
   const __files = {}
 
+  const __memoize = {
+    check: {}
+  }
+
   /**
    * @constructor
    * @param {Object} params
@@ -220,6 +224,7 @@ const Log = function (params) {
   }
 
   const __reset = function () {
+    __memoize.check = {}
     __resetFiles()
   }
 
@@ -235,16 +240,21 @@ const Log = function (params) {
   }
 
   /**
+   * memoized
    * @param {string} segment
    * @param {string} level
    * @return bool
    */
   const __check = function (segment, level) {
-    return ((segment === '*') ||
-      __enabled.segments === '*' ||
-      tools.array.contains(__enabled.segments, segment)) &&
-      ((__enabled.levels === '*') ||
-      tools.array.contains(__enabled.levels, level))
+    if (!__memoize.check[segment + level]) {
+      __memoize.check[segment + level] = ((segment === '*') ||
+        __enabled.segments === '*' ||
+        tools.array.contains(__enabled.segments, segment)) &&
+        ((__enabled.levels === '*') ||
+        tools.array.contains(__enabled.levels, level))
+    }
+
+    return __memoize.check[segment + level]
   }
 
   /**

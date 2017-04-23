@@ -1,6 +1,6 @@
 {
   "name": "log-segment",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
@@ -10,7 +10,9 @@
     "nodemailer": "^4.x"
   },
   "devDependencies": {
-    "pre-commit": "^x"
+    "pre-commit": "^x",
+    "tap": "^x",
+    "standard": "^x"
   },
   "engines": {
     "node": ">6.x"
