@@ -3,7 +3,12 @@
 - [Installing](#installing)
 - [Getting Started](#getting-started)
 - [Settings](#settings)
-- [API](#api)
+- [API](#api)  
+  - [.set](#.set)
+  - [.get](#.get)
+  - [.add](#.add)
+  - [.value](#.value)
+  - [.check](#.check)
 
 ---
 
@@ -193,7 +198,7 @@ log.panic('*', 'panic message')
 
 # API
 
-#### set
+#### .set
 
 ````js
 .set(settings)
@@ -262,7 +267,7 @@ log.set({
 })
 ````
 
-#### get
+#### .get
 
 ````js
 .get()
@@ -270,7 +275,7 @@ log.set({
 
 Return Object with current settings
 
-#### add
+#### .add
 
 ````js
 .add(settings)
@@ -295,13 +300,13 @@ settings.segments = {
 
 ````
 
-#### value
+#### .value
 
 ````js
 .value(label, value)
-alias .val(label, value)
-alias .v(label, value)
 ````
+
+aliases: ``.val``, ``.v``
 
 .value is used to encapsulate ``value`` and defer the moment to convert to string to the actual print.  
 It's useful for:
@@ -309,4 +314,19 @@ It's useful for:
 - don't worry about formatting Object, Date, Error etc
 - easily collect variables in same format
 
+Actually return a function.
+
 The ouput is ``[label=value]``
+
+#### .test
+
+````js
+.check()
+````
+
+Check output settings:
+  - check valid colors
+  - check emails settings sending sample emails
+  - check files settings write sample logs
+  
+return ``Promise(resolve(), reject(err))``

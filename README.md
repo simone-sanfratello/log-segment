@@ -261,6 +261,13 @@ See [documentation](./doc/README.md) for further informations.
 
 ## Changelog
 
+v. 1.2.0
+
+- Add .check(): check settings for 
+  - console > color
+  - files > write permission
+  - emails > send settings
+
 v. 1.1.0
 
 - Add support for email mode
@@ -274,7 +281,6 @@ v. 1.1.0
 - multiple mode for each setting (example: on panic send email, log to file, send sms, call mom)
 - customizable action (example: on error run function)
 - browser support (browserify?)
-- .test() test settings: write files, send emails ...
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)

@@ -55,7 +55,7 @@ const Log = function (params) {
   const __files = {}
 
   const __memoize = {
-    check: {}
+    printable: {}
   }
 
   /**
@@ -163,7 +163,7 @@ const Log = function (params) {
         console.warn('log-segment, override segment', i)
       }
       let _segment = segments[i]
-      __checkSetting(_segment, 'segment')
+      __checkSetting(_segment, {segment: i})
       __segments[i] = _segment
     }
   }
@@ -187,7 +187,7 @@ const Log = function (params) {
         console.warn('log-segment, override level', i)
       }
       Log.prototype[i] = __print(i)
-      __checkSetting(_level, 'level')
+      __checkSetting(_level, {level: i})
       // cache markers
       if (_level.marker) {
         if (_level.color && chalk[_level.color]) {
@@ -216,7 +216,8 @@ const Log = function (params) {
         break
       case mode.CONSOLE:
       default:
-        if (setting.color && !chalk[setting.color]) {
+        let _check = __checkConsole(setting)
+        if (_check.err) {
           console.warn('log-segment, unknown color', setting.color, 'for', part)
         }
         break
@@ -224,7 +225,7 @@ const Log = function (params) {
   }
 
   const __reset = function () {
-    __memoize.check = {}
+    __memoize.printable = {}
     __resetFiles()
   }
 
@@ -245,16 +246,16 @@ const Log = function (params) {
    * @param {string} level
    * @return bool
    */
-  const __check = function (segment, level) {
-    if (!__memoize.check[segment + level]) {
-      __memoize.check[segment + level] = ((segment === '*') ||
+  const __printable = function (segment, level) {
+    if (!__memoize.printable[segment + level]) {
+      __memoize.printable[segment + level] = ((segment === '*') ||
         __enabled.segments === '*' ||
         tools.array.contains(__enabled.segments, segment)) &&
         ((__enabled.levels === '*') ||
         tools.array.contains(__enabled.levels, level))
     }
 
-    return __memoize.check[segment + level]
+    return __memoize.printable[segment + level]
   }
 
   /**
@@ -263,7 +264,7 @@ const Log = function (params) {
    */
   const __print = function (level) {
     return function (segment) {
-      if (!__check(segment, level)) {
+      if (!__printable(segment, level)) {
         return false
       }
 
@@ -387,6 +388,111 @@ const Log = function (params) {
     return true
   }
 
+  /**
+   * @see ./doc/README.md#.check
+   */
+  const check = function () {
+    return new Promise((resolve, reject) => {
+      // run all promises, whatever success or not
+      const _tasks = []
+      let _errors = []
+      const _promise = function (promise, p0, p1) {
+        return new Promise((resolve, reject) => {
+          promise(p0)
+            .then(resolve)
+            .catch((err) => {
+              _errors.push({err: err, part: p1})
+              resolve()
+            })
+        })
+      }
+      for (const i in __levels) {
+        _tasks.push(_promise(__check, __levels[i], `level ${i}`))
+      }
+      for (const i in __segments) {
+        _tasks.push(_promise(__check, __segments[i], `segments ${i}`))
+      }
+
+      Promise.all(_tasks)
+        .then(() => {
+          _errors.length > 0
+            ? reject(_errors)
+            : resolve()
+        })
+    })
+  }
+
+  const __check = function (setting) {
+    switch (setting.mode) {
+      case mode.EMAIL:
+        return __checkEmail(setting)
+      case mode.FILE:
+        return __checkFile(setting)
+      default:
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            let _check = __checkConsole(setting)
+            if (_check.err) {
+              reject(_check.message)
+              return
+            }
+            resolve()
+          }, 0)
+        })
+    }
+  }
+
+  /**
+   * @param {Object} setting
+   */
+  const __checkConsole = function (setting) {
+    if (setting.color && !chalk[setting.color]) {
+      return {err: true, message: 'unknown color' + setting.color}
+    }
+    return {err: false}
+  }
+
+  const __checkFile = function (setting) {
+    return new Promise((resolve, reject) => {
+      fs.ensureFile(setting.file, (err) => {
+        if (err) {
+          reject(err)
+          return
+        }
+        // test write
+        const _data = '*** log-segment.check settings: mode file ***'
+
+        let _stream = fs.createWriteStream(setting.file, {flags: 'a', defaultEncoding: 'utf8'})
+        _stream.on('close', function () {
+          resolve()
+        })
+        _stream.on('error', function (err) {
+          reject(err)
+        })
+
+        _stream.write(_data)
+        _stream.end()
+      })
+    })
+  }
+
+  const __checkEmail = function (setting) {
+    return new Promise((resolve, reject) => {
+      let _transporter = nodemailer.createTransport(setting.email.transporter)
+
+      const _options = Object.assign(setting.email.options)
+      _options.text = '*** log-segment.check settings: mode email ***'
+
+      _transporter.sendMail(_options, (err, info) => {
+        if (err) {
+          reject(err)
+          return
+        }
+        resolve()
+      })
+    })
+  }
+
   __init(params)
 
   Object.defineProperty(Log.prototype, 'levels', {
@@ -407,6 +513,7 @@ const Log = function (params) {
   Log.prototype.set = set
   Log.prototype.get = get
   Log.prototype.add = add
+  Log.prototype.check = check
   Log.prototype.value = Log.prototype.val = Log.prototype.v = value
 
   Log.prototype.mode = mode

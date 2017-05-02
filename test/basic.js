@@ -6,36 +6,25 @@ const tap = require('tap')
 
 const log = require('../main')
 
-const samples = require('./samples/sample.json')
-
 let segments, levels, enabled, scenarios
-
-const result = function (level, segment) {
-  try {
-    return (segment === '*' ||
-      enabled.segments === '*' ||
-      enabled.segments.indexOf(segment) !== -1) &&
-      (enabled.levels === '*' ||
-      enabled.levels.indexOf(level) !== -1)
-  } catch (e) {}
-  return false
-}
 
 const test = function () {
   console.log('settings', log.get())
 
-  Object.keys(log.levels).forEach(function (level) {
-    samples.forEach((sample) => {
-      tap.test('print', (test) => {
-        test.plan(1)
-        let _print = log[level](sample.segment, sample.message)
-        test.equal(_print, result(level, sample.segment))
-      // console.log(level, sample.segment, _print, result(level, sample.segment))
-      // log[level](sample.segment, sample.message)
+  tap.test('.check', (test) => {
+    test.plan(1)
+    log.check()
+      .then(() => {
+        test.pass('check ok - success')
       })
-    })
+      .catch((err) => {
+        test.pass('check ok - error', err)
+      })
   })
-// }
+  // @todo .set
+  // @todo .add
+  // @todo .get
+  // @todo .value
 }
 
 // default settings
@@ -85,8 +74,8 @@ levels = {
       transporter: {
         service: 'gmail',
         auth: {
-          user: '***@gmail.com',
-          pass: '***'
+          user: 'braceslab0@gmail.com',
+          pass: process.argv[2]
         }
       },
       options: {
