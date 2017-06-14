@@ -226,6 +226,8 @@ settings.enabled = { levels: '*' }
 settings.enabled = { levels: ['level-name', 'level-name'] }
 
 settings.enabled = { levels: null or [] }
+
+settings.format = '{marker} {timestamp} {message}'
 ````
 
 Example  

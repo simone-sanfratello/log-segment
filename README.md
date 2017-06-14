@@ -291,13 +291,12 @@ v. 1.1.0
 
 ## TODO
 
-- custom format for each level (ex. add trace only in panic)
 - add chrono > ``log.chrono('tag')``
-- browser support (mode: console - no colors, file - fs.html5)
-- custom format in log.value
+- custom format for each level (ex. add trace only in panic)
+- browser support, only console mode (!colors) ``console.log('%c message', 'color: red');``
 - custom mode: stream, (sms, telegram and whatever)
+- custom format in log.value
 - multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
-- customizable action (example: on error run function)
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)
