@@ -12,7 +12,7 @@ Javascript logger with partition
 ## Purpose
 
 Why Another Log Module? Because not all logs are equal.  
-I'd like to use a pliable tool that allow to easy and quickly manage logs by two factors: **level** and **segment**.  
+I'd like to use a pliable tool to quickly manage logs by two factors: **level** and **segment**.  
 
 ## Installing
 
@@ -31,10 +31,10 @@ const sql = 'INSERT INTO table ...'
 log.info('sql', 'executing query ...', log.value('sql', sql))
 db.query(sql)
 .then(() => {
-    log.success('sql', 'query done.', log.value('sql', sql))
+  log.success('sql', 'query done.', log.value('sql', sql))
 })
 .catch((err) => {
-    log.error('sql', 'query error', log.value('sql', sql))
+  log.error('sql', 'query error', log.value('sql', sql))
 })
 ````
 
@@ -42,17 +42,17 @@ db.query(sql)
 const log = require('log-segment')
 
 require('express')().all('/*', (request, response) => {
-    log.info('http', 'request', request.method, request.baseUrl)
-    
-    doSomething(request)
-    .then((output) => {
-        response.send(output)
-        log.success('http', 'response on request', request.method, request.baseUrl)
-    })
-    .catch((err) => {
-        response.sendStatus(500)
-        log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
-    })
+  log.info('http', 'request', request.method, request.baseUrl)
+  
+  doSomething(request)
+  .then((output) => {
+    response.send(output)
+    log.success('http', 'response on request', request.method, request.baseUrl)
+  })
+  .catch((err) => {
+    response.sendStatus(500)
+    log.error('http', 'response on request', request.method, request.baseUrl, log.value('err', err))
+  })
 })
 ````
 
@@ -75,8 +75,10 @@ There is no hierarchy by levels.
      panic: { color: 'magenta', marker: '😱' }
   },
   segments: { '*': { color: 'white' } },
-  enabled: { segments: '*', levels: '*' } }
-  ````
+  template: '{marker} [{timestamp}] {message}',
+  enabled: { segments: '*', levels: '*' } 
+}
+````
 
 ##### Custom segments
 
@@ -147,7 +149,6 @@ log.set({
   }
 })
 
-
 const sql = 'INSERT INTO table ...'
 
 log.trace('sql', 'executing query ...', log.value('sql', sql))
@@ -168,6 +169,17 @@ log.warning('html', 'rendering missing value', log.value('username', username))
 ````
 
 ![custom levels](./doc/img/custom-levels.jpg  "custom levels")
+
+#### Custom format
+
+Default format is ``'{marker} [{timestamp}] {message}'``.  
+You can also add ``{trace}``  
+
+````js
+log.set({
+  format: '{marker} [{timestamp}] {message} {trace}'
+})
+````
 
 ### Use Cases
 
@@ -261,6 +273,11 @@ See [documentation](./doc/README.md) for further informations.
 
 ## Changelog
 
+v. 1.3.0
+
+- Add customizable output format
+- Add message info: trace, timestamp
+
 v. 1.2.0
 
 - Add .check(): check settings for 
@@ -274,13 +291,13 @@ v. 1.1.0
 
 ## TODO
 
-- add message info: trace, timestamp, chrono
-- custom format in message
+- custom format for each level (ex. add trace only in panic)
+- add chrono > ``log.chrono('tag')``
+- browser support (mode: console - no colors, file - fs.html5)
 - custom format in log.value
 - custom mode: stream, (sms, telegram and whatever)
-- multiple mode for each setting (example: on panic send email, log to file, send sms, call mom)
+- multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
 - customizable action (example: on error run function)
-- browser support (browserify?)
 - (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)

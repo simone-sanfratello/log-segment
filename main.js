@@ -5,6 +5,8 @@ const chalk = require('chalk')
 const fs = require('fs-extra')
 const nodemailer = require('nodemailer')
 
+// ? Error.stackTraceLimit = Infinity;
+
 const mode = {
   CONSOLE: 0,
   FILE: 1,
@@ -41,6 +43,12 @@ const Log = function (params) {
     }
   }
   let __segments = {'*': { color: 'white' }}
+  let __template = {
+    string: '{marker} [{timestamp}] {message}',
+    timestamp: true,
+    marker: true,
+    trace: false
+  }
 
   let __markers
 
@@ -61,6 +69,7 @@ const Log = function (params) {
   /**
    * @constructor
    * @param {Object} params
+   * @param {string} template default '{marker} [{timestamp}] {message}'
    */
   const __init = function (params) {
     __markers = {}
@@ -85,6 +94,10 @@ const Log = function (params) {
       __setLevels(params.levels)
     }
 
+    if (params.format) {
+      __setTemplate(params.format)
+    }
+
     if (params.enabled) {
       if (params.enabled.segments === null) {
         __enabled.segments = []
@@ -107,7 +120,8 @@ const Log = function (params) {
     return {
       levels: Object.assign({}, __levels),
       segments: Object.assign({}, __segments),
-      enabled: Object.assign({}, __enabled)
+      enabled: Object.assign({}, __enabled),
+      format: __template.string
     }
   }
 
@@ -150,6 +164,13 @@ const Log = function (params) {
         return `[${label}=${value}]`
       }
     }
+  }
+
+  const __setTemplate = function (template) {
+    __template.string = template
+    __template.marker = template.indexOf('{marker}') !== -1
+    __template.timestamp = template.indexOf('{timestamp}') !== -1
+    __template.trace = template.indexOf('{trace}') !== -1
   }
 
   const __setSegments = function (segments) {
@@ -268,8 +289,9 @@ const Log = function (params) {
         return false
       }
 
-      let _data = Array.prototype.slice.call(arguments)
-      _data = _data.map((message) => {
+      const _data = {}
+
+      _data.message = Array.prototype.slice.call(arguments).map((message) => {
         // stringify an object
         if (typeof message === 'object') {
           try {
@@ -282,57 +304,94 @@ const Log = function (params) {
         }
         // add segment color
         // paint the message
-        if (__segments[segment] &&
-          __segments[segment].color &&
-          chalk[__segments[segment].color]) {
-          return chalk[__segments[segment].color](message)
-        }
-        return message
+        return __color(segment, message)
       })
 
       // add marker
       if (__levels[level].marker) {
-        _data.unshift(__markers[level])
+        _data.marker = __markers[level]
       }
 
-      return __output(segment, level, _data)
+      return __output(segment, level, __color(segment, __format(_data)))
     }
   }
 
+  const __color = function (segment, message) {
+    if (__segments[segment] &&
+      __segments[segment].color &&
+      chalk[__segments[segment].color]) {
+      return chalk[__segments[segment].color](message)
+    }
+    return message
+  }
+
   /**
-   * @todo custom format
+   * @param {Object} data {message, marker}
+   * @return string
    */
-  const __output = function (segment, level, data) {
+  const __format = function (data) {
+    if (__template.timestamp) {
+      data.timestamp = __timestamp()
+    }
+    if (__template.trace) {
+      data.trace = __trace()
+    }
+    data.message = data.message.join(' ')
+    return tools.string.template(__template.string, data, true)
+  }
+
+  /**
+   * nb heavy operation
+   */
+  const __timestamp = function () {
+    return new Date().toISOString()
+  }
+
+  /**
+   * nb heavy operation
+   * nb split last 4 entries
+   */
+  const __trace = function () {
+    return '\n' + (new Error().stack.split('\n').splice(4).join('\n'))
+  }
+
+  /**
+   * @param {string} message
+   */
+  const __output = function (segment, level, message) {
     // email
     if (__segments[segment] && __segments[segment].mode === mode.EMAIL) {
-      return __outputEmail(__segments[segment].email, data)
+      return __outputEmail(__segments[segment].email, message)
     }
     if (__levels[level] && __levels[level].mode === mode.EMAIL) {
-      return __outputEmail(__levels[level].email, data)
+      return __outputEmail(__levels[level].email, message)
     }
 
     // file
     if (__segments[segment] && __segments[segment].mode === mode.FILE) {
-      return __outputFile(__segments[segment].file, data)
+      return __outputFile(__segments[segment].file, message)
     }
     if (__levels[level].mode === mode.FILE) {
-      return __outputFile(__levels[level].file, data)
+      return __outputFile(__levels[level].file, message)
     }
 
     // console
-    return __outputConsole(data)
+    return __outputConsole(message)
   }
 
-  const __outputConsole = function (data) {
-    console.log.apply(console, data)
+  /**
+   * @param {string} message
+   */
+  const __outputConsole = function (message) {
+    console.log(message)
     return true
   }
 
   /**
    * @param {string} file /path/to/file
-   * @param {string[]} data
+   * @param {string} message
    */
-  const __outputFile = function (file, data) {
+  const __outputFile = function (file, message) {
     // open stream, if not already opened
     if (!__files[file]) {
       fs.ensureFile(file, (err) => {
@@ -356,33 +415,32 @@ const Log = function (params) {
           console.log('file has been open')
         })
         */
-        __outputFile(file, data)
+        __outputFile(file, message)
       })
       return true
     }
 
-    data.push('\n')
-    __files[file].stream.write(data.join(' '))
+    __files[file].stream.write(message + '\n')
     return true
   }
 
   /**
-   * @todo html
+   * @todo html?
    * @param {*} email
-   * @param {*} data
+   * @param {string} message
    */
-  const __outputEmail = function (email, data) {
+  const __outputEmail = function (email, message) {
     if (!email._transporter) {
       email._transporter = nodemailer.createTransport(email.transporter)
     }
 
     const _options = Object.assign(email.options)
-    _options.text = data.join('\n')
+    _options.text = message + '\n'
 
     email._transporter.sendMail(_options, (err, info) => {
       if (err) {
         __outputConsole(['ERROR SENDING EMAIL', _options])
-        __outputConsole([data])
+        __outputConsole(message)
       }
     })
     return true
