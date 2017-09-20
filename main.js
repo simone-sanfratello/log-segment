@@ -114,13 +114,19 @@ const Log = function (params) {
 
     if (params.disabled) {
       if (Array.isArray(params.disabled.segments) && __enabled.segments) {
-        __enabled.segments.filter((segment) => {
+        if (__enabled.segments === '*') {
+          __enabled.segments = Object.keys(__segments)
+        }
+        __enabled.segments = __enabled.segments.filter((segment) => {
           return params.disabled.segments.indexOf(segment)
         })
       }
 
       if (Array.isArray(params.disabled.levels) && __enabled.levels) {
-        __enabled.levels.filter((level) => {
+        if (__enabled.levels === '*') {
+          __enabled.levels = Object.keys(__levels)
+        }
+        __enabled.levels = __enabled.levels.filter((level) => {
           return params.disabled.levels.indexOf(level)
         })
       }
