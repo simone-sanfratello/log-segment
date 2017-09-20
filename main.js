@@ -111,6 +111,20 @@ const Log = function (params) {
         __enabled.levels = params.enabled.levels
       }
     }
+
+    if (params.disabled) {
+      if (Array.isArray(params.disabled.segments) && __enabled.segments) {
+        __enabled.segments.filter((segment) => {
+          return params.disabled.segments.indexOf(segment)
+        })
+      }
+
+      if (Array.isArray(params.disabled.levels) && __enabled.levels) {
+        __enabled.levels.filter((level) => {
+          return params.disabled.levels.indexOf(level)
+        })
+      }
+    }
   }
 
   /**

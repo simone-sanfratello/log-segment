@@ -204,7 +204,7 @@ log.panic('*', 'panic message')
 .set(settings)
 ````
 
-Set levels and/or segments and/or enabled
+Set levels and/or segments and/or enabled (or disabled)
 
 ````js
 settings.levels = {
@@ -226,6 +226,8 @@ settings.enabled = { levels: '*' }
 settings.enabled = { levels: ['level-name', 'level-name'] }
 
 settings.enabled = { levels: null or [] }
+
+settings.disabled = { levels: ['level-name', 'level-name'], segments: ['segment-name'] }
 
 settings.format = '{marker} {timestamp} {message}'
 ````
@@ -267,6 +269,11 @@ log.set({
     }
   }
 })
+
+// [...]
+
+log.set({disabled: {levels: ['level0']}})
+
 ````
 
 #### .get

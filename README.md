@@ -208,6 +208,13 @@ Enable only segments to focus on, at any levels, to find that bug
 log.set({ enabled: { segments: ['sql', 'network'] } })
 ````
 
+**Beta**
+Enable all segments, disable info and success level
+
+````js
+log.set({ disabled: { levels: ['info', 'success'] } })
+````
+
 **Production**
 
 Different behaviour for each level:
