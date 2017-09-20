@@ -17,7 +17,7 @@ I'd like to use a pliable tool to quickly manage logs by two factors: **level** 
 ## Installing
 
 ````bash
-$ npm i -g log-segment
+$ npm i log-segment
 ````
 
 ### Quick start

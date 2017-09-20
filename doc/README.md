@@ -283,7 +283,7 @@ Return Object with current settings
 .add(settings)
 ````
 
-Add settings; same as ``.set``, but add settings instead of replace. If segment or level aready exists, override.
+Add settings; same as ``.set``, but add `settings` instead of replace them. If `segment` or `level` aready exists, will override them.
 
 ````js
 settings.levels = {
