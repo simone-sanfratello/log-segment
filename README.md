@@ -3,8 +3,6 @@
 [![NPM Version](http://img.shields.io/npm/v/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)
 [![NPM Downloads](https://img.shields.io/npm/dm/log-segment.svg?style=flat)](https://www.npmjs.org/package/log-segment)
 
-[![NPM](https://nodei.co/npm-dl/log-segment.png)](https://nodei.co/npm/log-segment/)
-
 [![JS Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 Javascript logger with partition  
