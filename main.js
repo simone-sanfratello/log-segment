@@ -102,13 +102,13 @@ const Log = function (params) {
       if (params.enabled.segments === null) {
         __enabled.segments = []
       } else {
-        __enabled.segments = params.enabled.segments
+        __enabled.segments = params.enabled.segments || __enabled.segments
       }
 
       if (params.enabled.levels === null) {
         __enabled.levels = []
       } else {
-        __enabled.levels = params.enabled.levels
+        __enabled.levels = params.enabled.levels || __enabled.levels
       }
     }
 
