@@ -14,7 +14,7 @@ Javascript logger with partition
 Why Another Log Module? Because not all logs are equal.  
 I'd like to use a pliable tool to quickly manage logs by two factors: **level** and **segment**.  
 
-## Installing
+## Install
 
 ````bash
 $ npm i log-segment
