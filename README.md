@@ -73,7 +73,7 @@ There is no hierarchy by levels.
      panic: { color: 'magenta', marker: '😱' }
   },
   segments: { '*': { color: 'white' } },
-  template: '{marker} [{timestamp}] {message}',
+  format: '{marker} [{timestamp}] {message}',
   enabled: { segments: '*', levels: '*' } 
 }
 ````
@@ -219,7 +219,7 @@ log.set({ disabled: { levels: ['info', 'success'] } })
 **Production**
 
 Different behaviour for each level:
-  - disable not interesting parts: success level, template rendering
+  - disable not interesting parts: success level
   - different file for each type: *info, warning, error*
     and remove marks
   - separate sql file

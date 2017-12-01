@@ -69,14 +69,10 @@ const Log = function (params) {
   /**
    * @constructor
    * @param {Object} params
-   * @param {string} params.template default '{marker} [{timestamp}] {message}'
    */
   const __init = function (params) {
     __markers = {}
     __setLevels(__levels)
-    if (params && params.template) {
-      __setTemplate(params.template)
-    }
   }
 
   /**
