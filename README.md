@@ -192,21 +192,24 @@ log.set({
 })
 ````
 
-**Development**
+**Development**  
+
 Just enable everything on console
 
 ````js
 log.set({ enabled: { segments: '*', levels: '*' } })
 ````
 
-**Debug**
+**Debug**  
+
 Enable only segments to focus on, at any levels, to find that bug
 
 ````js
 log.set({ enabled: { segments: ['sql', 'network'] } })
 ````
 
-**Beta**
+**Beta**  
+
 Enable all segments, disable info and success level
 
 ````js
