@@ -54,7 +54,7 @@ require('express')().all('/*', (request, response) => {
 })
 ````
 
-![quickstart](./doc/img/quickstart.jpg  "quickstart")
+![quickstart](./doc/img/quickstart.png  "quickstart")
 
 #### Default settings
 
