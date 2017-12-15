@@ -5,34 +5,34 @@
 
 [![JS Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-Javascript logger with partition  
+javascript logger with partition
 
 ## Purpose
 
-Why Another Log Module? Because not all logs are equal.  
+Not all logs are equal.  
 I'd like to use a pliable tool to quickly manage logs by two factors: **level** and **segment**.  
 
 ## Install
 
 ````bash
-$ npm i log-segment
+$ npm i log-segment --save
 ````
 
 ### Quick start
 
-``log-segment`` is single-ton, so just require and use everywhere.
+``log-segment`` is singleton, so just require and use everywhere.
 
 ````js
 const log = require('log-segment')
 
-const sql = 'INSERT INTO table ...'
-log.info('sql', 'executing query ...', log.value('sql', sql))
+const sql = 'INSERT INTO users (username, name) VALUES ($1, $2)'
+log.info('sql', 'create user', log.value('sql', sql), log.chrono('insert-user'))
 db.query(sql)
 .then(() => {
-  log.success('sql', 'query done.', log.value('sql', sql))
+  log.success('sql', 'user created.', log.value('sql', sql), log.chrono('insert-user'))
 })
 .catch((err) => {
-  log.error('sql', 'query error', log.value('sql', sql))
+  log.error('sql', 'user not created', log.value('sql', sql), log.value('error', err), log.chrono('insert-user'))
 })
 ````
 
@@ -281,6 +281,10 @@ See [documentation](./doc/README.md) for further informations.
 
 ## Changelog
 
+v. 1.6.0
+
+- Add chrono function ``log.chrono('tag')``
+
 v. 1.3.0
 
 - Add customizable output format
@@ -299,13 +303,12 @@ v. 1.1.0
 
 ## TODO
 
-- add chrono > ``log.chrono('tag')``
-- custom format for each level (ex. add trace only in panic)
-- browser support, only console mode (!colors) ``console.log('%c message', 'color: red');``
-- custom mode: stream, (sms, telegram and whatever)
-- custom format in log.value
-- multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
-- (evaluate) support workers (as transport)
+- [ ] custom format for each level (ex. add trace only in panic)
+- [ ] browser support, only console mode (!colors) ``console.log('%c message', 'color: red');``
+- [ ] custom mode: stream, (sms, telegram and whatever)
+- [ ] custom format in log.value
+- [ ] multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
+- [ ] (evaluate) support workers (as transport)
   - [pino](https://github.com/pinojs/pino)
   - [npmlog](https://github.com/npm/npmlog)
   - [winston](https://github.com/winstonjs/winston)

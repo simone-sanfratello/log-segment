@@ -4,10 +4,10 @@ const log = require('../main')
 
 console.log(log.get())
 
-const sql = 'INSERT INTO table ...'
+const sql = 'INSERT INTO users (username, name) VALUES ($1, $2)'
 
-log.info('sql', 'executing query ...', log.value('sql', sql))
-log.success('sql', 'query done.', log.value('sql', sql))
+log.info('sql', 'create user', log.value('sql', sql), log.chrono('insert-user'))
+log.success('sql', 'user created.', log.value('sql', sql), log.chrono('insert-user'))
 
 const request = {
   method: 'GET',

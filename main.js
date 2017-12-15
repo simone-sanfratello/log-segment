@@ -66,6 +66,8 @@ const Log = function (params) {
     printable: {}
   }
 
+  const __chrono = {}
+
   /**
    * @constructor
    * @param {Object} params
@@ -570,6 +572,14 @@ const Log = function (params) {
     })
   }
 
+  const chrono = function (tag, reset) {
+    if (!__chrono[tag] || reset) {
+      __chrono[tag] = Date.now()
+      return
+    }
+    return '[' + tag + ' +' + (Date.now() - __chrono[tag]) + ' ms]'
+  }
+
   __init(params)
 
   Object.defineProperty(Log.prototype, 'levels', {
@@ -592,6 +602,7 @@ const Log = function (params) {
   Log.prototype.add = add
   Log.prototype.check = check
   Log.prototype.value = Log.prototype.val = Log.prototype.v = value
+  Log.prototype.chrono = chrono
 
   Log.prototype.mode = mode
 }
