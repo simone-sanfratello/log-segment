@@ -98,22 +98,6 @@ http: {
   file: '/var/log/myapp/http.log'
 }
 ````
-## Default settings
-
-````js
-const log = require('log-segment')
-
-console.log(log.get())
-
-log.info('*', 'info message')
-log.success('*', 'success message')
-log.warning('*', 'warning message')
-log.error('*', 'error message')
-log.panic('*', 'panic message')
-````
-
-![default](img/default.png  "default")
-
 
 ## Level
 
