@@ -77,6 +77,8 @@ There is no hierarchy by levels.
 }
 ````
 
+![default](./doc/img/default.png  "default")
+
 ##### Custom segments
 
 ````js
