@@ -9,8 +9,7 @@ javascript logger with partition
 
 ## Purpose
 
-Not all logs are equal.  
-I'd like to use a pliable tool to quickly manage logs by two factors: **level** and **segment**.  
+Quickly manage logs by two **level** and **segment**.  
 
 ## Install
 
@@ -73,7 +72,7 @@ There is no hierarchy by levels.
      panic: { color: 'magenta', marker: '😱' }
   },
   segments: { '*': { color: 'white' } },
-  format: '{marker} [{timestamp}] {message}',
+  format: '{segment} | {marker} [{timestamp}] {message}',
   enabled: { segments: '*', levels: '*' } 
 }
 ````
@@ -94,7 +93,12 @@ log.set({
     sql: {
       mode: log.mode.FILE,
       file: '/tmp/myapp/sql.log'
-    }
+    },
+    sys: {
+      mode: log.mode.FILE,
+      file: '/tmp/myapp/sys.log',
+      format: '{timestamp} {message}'
+    },
   }
 })
 
@@ -118,7 +122,7 @@ log.warning('html', 'rendering missing value', log.value('username', username))
 
 ````
 
-![custom segments](./doc/img/custom-segments.jpg  "custom segments")
+![custom segments](./doc/img/custom-segments.png  "custom segments")
 
 #### Custom levels
 
@@ -126,14 +130,6 @@ log.warning('html', 'rendering missing value', log.value('username', username))
 const log = require('log-segment')
 
 log.set({
-  segments: {
-    http: {
-      color: 'yellow'
-    },
-    sql: {
-      color: 'white'
-    }
-  },
   levels: {
     trace: {
       marker: '[TRACE]'
@@ -142,7 +138,10 @@ log.set({
       marker: '[WARN]'
     },
     error: {
-      marker: '[ERR]'
+      marker: '[ERR]',
+      mode: log.mode.FILE,
+      file: '/tmp/myapp/error.log',
+      format: '{timestamp} {message}'
     }
   }
 })
@@ -166,12 +165,12 @@ let username = null
 log.warning('html', 'rendering missing value', log.value('username', username))
 ````
 
-![custom levels](./doc/img/custom-levels.jpg  "custom levels")
+![custom levels](./doc/img/custom-levels.png  "custom levels")
 
 #### Custom format
 
-Default format is ``'{marker} [{timestamp}] {message}'``.  
-You can also add ``{trace}``  
+Default format is ``'{segment} | {marker} [{timestamp}] {message}'``.  
+You can optionally add ``{trace}``  
 
 ````js
 log.set({
@@ -254,7 +253,7 @@ log.set({
       file: '/var/log/myapp/error'
     },
     panic: {
-      mode: log.mode.MAIL,
+      mode: log.mode.EMAIL,
         email: {
           transporter: {
             service: 'gmail',
@@ -281,21 +280,26 @@ See [documentation](./doc/README.md) for further informations.
 
 ## Changelog
 
+v. 1.7.0
+
+- Add custom format to ``level``, optionally add ``{segment}``
+- Default format review as ``'{segment} | {marker} [{timestamp}] {message}'``
+
 v. 1.6.0
 
 - Add chrono function ``log.chrono('tag')``
 
 v. 1.3.0
 
-- Add customizable output format
-- Add message info: trace, timestamp
+- Add customizable output default format
+- Add message info ``trace``, ``timestamp``
 
 v. 1.2.0
 
-- Add .check(): check settings for 
+- Add ``.check()`` to check settings for 
   - console > color
   - files > write permission
-  - emails > send settings
+  - emails > sending settings
 
 v. 1.1.0
 
@@ -303,7 +307,6 @@ v. 1.1.0
 
 ## TODO
 
-- [ ] custom format for each level (ex. add trace only in panic)
 - [ ] browser support, only console mode (!colors) ``console.log('%c message', 'color: red');``
 - [ ] custom mode: stream, (sms, telegram and whatever)
 - [ ] custom format in log.value
@@ -323,7 +326,7 @@ v. 1.1.0
 
 The MIT License (MIT)
 
-Copyright (c) 2017, [braces lab](https://braceslab.com)
+Copyright (c) 2017-2018, [braces lab](https://braceslab.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

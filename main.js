@@ -44,10 +44,15 @@ const Log = function (params) {
   }
   let __segments = {'*': { color: 'white' }}
   let __template = {
-    string: '{marker} [{timestamp}] {message}',
-    timestamp: true,
-    marker: true,
-    trace: false
+    default: {
+      string: '{segment} | {marker} [{timestamp}] {message}',
+      segment: true,
+      timestamp: true,
+      marker: true,
+      trace: false
+    },
+    segment: {},
+    level: {}
   }
 
   let __markers
@@ -96,7 +101,7 @@ const Log = function (params) {
     }
 
     if (params.format) {
-      __setTemplate(params.format)
+      __setTemplate('default', null, params.format)
     }
 
     if (params.enabled) {
@@ -139,10 +144,10 @@ const Log = function (params) {
    */
   const get = function () {
     return {
-      levels: Object.assign({}, __levels),
-      segments: Object.assign({}, __segments),
-      enabled: Object.assign({}, __enabled),
-      format: __template.string
+      levels: tools.object.clone(__levels),
+      segments: tools.object.clone(__segments),
+      enabled: tools.object.clone(__enabled),
+      format: __template.default.string
     }
   }
 
@@ -187,11 +192,20 @@ const Log = function (params) {
     }
   }
 
-  const __setTemplate = function (template) {
-    __template.string = template
-    __template.marker = template.indexOf('{marker}') !== -1
-    __template.timestamp = template.indexOf('{timestamp}') !== -1
-    __template.trace = template.indexOf('{trace}') !== -1
+  const __setTemplate = function (part, name, template) {
+    const _t = {
+      string: template,
+      segment: template.indexOf('{segment}') !== -1,
+      marker: template.indexOf('{marker}') !== -1,
+      timestamp: template.indexOf('{timestamp}') !== -1,
+      trace: template.indexOf('{trace}') !== -1
+    }
+
+    if (part === 'default') {
+      __template.default = _t
+    } else {
+      __template[part][name] = _t
+    }
   }
 
   const __setSegments = function (segments) {
@@ -206,6 +220,9 @@ const Log = function (params) {
       }
       let _segment = segments[i]
       __checkSetting(_segment, {segment: i})
+      if (_segment.format) {
+        __setTemplate('segment', i, _segment.format)
+      }
       __segments[i] = _segment
     }
   }
@@ -237,6 +254,9 @@ const Log = function (params) {
         } else {
           __markers[i] = _level.marker
         }
+      }
+      if (_level.format) {
+        __setTemplate('level', i, _level.format)
       }
       __levels[i] = _level
     }
@@ -311,8 +331,10 @@ const Log = function (params) {
       }
 
       const _data = {}
+      const _args = Array.prototype.slice.call(arguments)
 
-      _data.message = Array.prototype.slice.call(arguments).map((message) => {
+      _data.segment = _args.shift(_args)
+      _data.message = _args.map((message) => {
         // stringify an object
         if (typeof message === 'object') {
           try {
@@ -333,7 +355,7 @@ const Log = function (params) {
         _data.marker = __markers[level]
       }
 
-      return __output(segment, level, __color(segment, __format(_data)))
+      return __output(segment, level, __color(segment, __format(segment, level, _data)))
     }
   }
 
@@ -347,18 +369,25 @@ const Log = function (params) {
   }
 
   /**
+   * NB segment has priority
+   * @param {string} segment segment name
+   * @param {string} level level name
    * @param {Object} data {message, marker}
    * @return string
    */
-  const __format = function (data) {
-    if (__template.timestamp) {
+  const __format = function (segment, level, data) {
+    const _t = __template.segment[segment] || __template.level[level] || __template.default
+    if (_t.timestamp) {
       data.timestamp = __timestamp()
     }
-    if (__template.trace) {
+    if (_t.trace) {
       data.trace = __trace()
     }
+    if (_t.segment) {
+      data.segment = segment
+    }
     data.message = data.message.join(' ')
-    return tools.string.template(__template.string, data, true)
+    return tools.string.template(_t.string, data, true)
   }
 
   /**
@@ -455,7 +484,7 @@ const Log = function (params) {
       email._transporter = nodemailer.createTransport(email.transporter)
     }
 
-    const _options = Object.assign(email.options)
+    const _options = tools.object.clone(email.options)
     _options.text = message + '\n'
 
     email._transporter.sendMail(_options, (err, info) => {
@@ -559,7 +588,7 @@ const Log = function (params) {
     return new Promise((resolve, reject) => {
       let _transporter = nodemailer.createTransport(setting.email.transporter)
 
-      const _options = Object.assign(setting.email.options)
+      const _options = tools.object.clone(setting.email.options)
       _options.text = '*** log-segment.check settings: mode email ***'
 
       _transporter.sendMail(_options, (err, info) => {
@@ -572,6 +601,10 @@ const Log = function (params) {
     })
   }
 
+  /**
+   * @param {!string} tag
+   * @param {?boolean} reset
+   */
   const chrono = function (tag, reset) {
     if (!__chrono[tag] || reset) {
       __chrono[tag] = Date.now()
@@ -584,17 +617,17 @@ const Log = function (params) {
 
   Object.defineProperty(Log.prototype, 'levels', {
     get: () => {
-      return Object.assign({}, __levels)
+      return tools.object.clone(__levels)
     }
   })
   Object.defineProperty(Log.prototype, 'segments', {
     get: () => {
-      return Object.assign({}, __segments)
+      return tools.object.clone(__segments)
     }
   })
   Object.defineProperty(Log.prototype, 'enabled', {
     get: () => {
-      return Object.assign({}, __enabled)
+      return tools.object.clone(__enabled)
     }
   })
   Log.prototype.set = set

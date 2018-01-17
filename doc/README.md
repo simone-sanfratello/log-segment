@@ -3,6 +3,11 @@
 - [Installing](#installing)
 - [Getting Started](#getting-started)
 - [Settings](#settings)
+  - [Default Settings](#default-settings)
+  - [Segment](#segment)
+  - [Level](#level)
+  - [Format](#format)
+  - [Mode](#mode)
 - [API](#api)  
   - [.set](#.set)
   - [.get](#.get)
@@ -44,6 +49,22 @@ fn()
 
 # Settings
 
+## Default settings
+
+````js
+const log = require('log-segment')
+
+console.log(log.get())
+
+log.info('*', 'info message')
+log.success('*', 'success message')
+log.warning('*', 'warning message')
+log.error('*', 'error message')
+log.panic('*', 'panic message')
+````
+
+![default](img/default.png  "default")
+
 ## Segment
 
 Segment define a logical partion of log.  
@@ -77,6 +98,22 @@ http: {
   file: '/var/log/myapp/http.log'
 }
 ````
+## Default settings
+
+````js
+const log = require('log-segment')
+
+console.log(log.get())
+
+log.info('*', 'info message')
+log.success('*', 'success message')
+log.warning('*', 'warning message')
+log.error('*', 'error message')
+log.panic('*', 'panic message')
+````
+
+![default](img/default.png  "default")
+
 
 ## Level
 
@@ -113,17 +150,12 @@ error: {
 - **CONSOLE**
 
 Default output, perform output to console.  
-The format output is  
-``[level-marker-colored] [segment-name-colored] [ouput-segment-colored]``
 
 Available colors are on [chalk](https://www.npmjs.com/package/chalk).
 
 - **FILE**
 
 Append output to file. Do not perform anything else like rotation, just append a line. Color is ignored.
-
-The format output is  
-``[level-marker] [segment-name] [ouput]``
 
 ````js
 error: {
@@ -139,9 +171,6 @@ Send an email, in text format.
 Use [nodemailer](https://www.npmjs.com/package/nodemailer), see the package for ``transporter`` and ``options`` settings.
 Color is ignored.
 
-The email body is  
-``[level-marker] [segment-name] [ouput]``
-
 ````js
 error: {
   mode: log.mode.EMAIL,
@@ -156,7 +185,7 @@ error: {
     options: {
       from: '"log-segment" <log-segment@test.test>',
       to: 'sys-admin@gmail.com',
-      subject: 'YOUR-APPLICATION: PANIC ERROR'
+      subject: 'MY-APP: PANIC ERROR'
     }
   }
 }
@@ -180,21 +209,34 @@ log.error('db', 'connection error')
 
 If error level is EMAIL and db segment is FILE, will be send an email usign error level settings.
 
-### Default settings
+## Format
+
+Can be set custom format for level and/or segment
 
 ````js
-const log = require('log-segment')
-
-console.log(log.get())
-
-log.info('*', 'info message')
-log.success('*', 'success message')
-log.warning('*', 'warning message')
-log.error('*', 'error message')
-log.panic('*', 'panic message')
+log.set({
+  segments: {
+    ...
+    http: {
+      color: 'yellow'
+      format: '{marker} {message}'
+    }
+  },
+  levels: {
+    ...
+    error: {
+      mode: log.mode.FILE,
+      file: '/var/log/myapp/error.log'
+      format: '{timestamp} {message} {trace}'
+    }
+  }
+})
 ````
 
-![default](img/default.jpg  "default")
+### Priority
+
+Format is applied in order: segment, level, default.
+
 
 # API
 
