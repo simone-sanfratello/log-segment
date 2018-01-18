@@ -314,12 +314,12 @@ v. 1.1.0
 - [ ] custom format in log.value
 - [ ] multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
 - [ ] (evaluate) support workers (as transport)
-  - [pino](https://github.com/pinojs/pino)
-  - [npmlog](https://github.com/npm/npmlog)
-  - [winston](https://github.com/winstonjs/winston)
-  - [log](https://github.com/tj/log.js)
-  - [debug](https://github.com/visionmedia/debug)
   - [bunyan](https://github.com/trentm/node-bunyan)
+  - [pino](https://github.com/pinojs/pino)
+  - [winston](https://github.com/winstonjs/winston)
+  - [debug](https://github.com/visionmedia/debug)
+  - [log](https://github.com/tj/log.js)
+  - [npmlog](https://github.com/npm/npmlog)
   - others?
 
 ---
