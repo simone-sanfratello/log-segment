@@ -4,6 +4,7 @@ const tools = require('a-toolbox')
 const chalk = require('chalk')
 const fs = require('fs-extra')
 const nodemailer = require('nodemailer')
+const isHtml = require('is-html')
 
 // ? Error.stackTraceLimit = Infinity;
 
@@ -485,7 +486,11 @@ const Log = function (params) {
     }
 
     const _options = tools.object.clone(email.options)
-    _options.text = message + '\n'
+    if (isHtml(message)) {
+      _options.html = message
+    } else {
+      _options.text = message + '\n'
+    }
 
     email._transporter.sendMail(_options, (err, info) => {
       if (err) {

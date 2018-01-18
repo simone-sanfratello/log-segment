@@ -1,12 +1,13 @@
 {
   "name": "log-segment",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
     "a-toolbox": "^1.x",
     "chalk": "^1.x",
     "fs-extra": "^3.x",
+    "is-html": "^1.1.x",
     "nodemailer": "^4.x"
   },
   "devDependencies": {

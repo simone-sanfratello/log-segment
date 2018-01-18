@@ -151,7 +151,7 @@ error: {
 
 - **EMAIL**
 
-Send an email, in text format. 
+Send an email; email will be in html or text format depending of message content.
 Use [nodemailer](https://www.npmjs.com/package/nodemailer), see the package for ``transporter`` and ``options`` settings.
 Color is ignored.
 
