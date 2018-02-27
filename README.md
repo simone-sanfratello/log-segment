@@ -172,7 +172,7 @@ log.warning('html', 'rendering missing value', log.value('username', username))
 #### Custom format
 
 Default format is ``'{segment} | {marker} [{timestamp}] {message}'``.  
-You can optionally add ``{trace}``  
+You can optionally add ``{trace}`` to format and it will implicitly add trace information  
 
 ````js
 log.set({
@@ -309,9 +309,12 @@ v. 1.1.0
 
 ## TODO
 
+- [ ] bdd test / tollo
+- [ ] pre-commit
+- [ ] travis ci
 - [ ] browser support, only console mode (!colors) ``console.log('%c message', 'color: red');``
-- [ ] custom mode: stream, (sms, telegram and whatever)
 - [ ] custom format in log.value
+- [ ] custom mode: stream (sms, telegram and whatever)
 - [ ] multiple mode for each setting (example: on panic send email + log to file + send sms + call mom)
 - [ ] (evaluate) support workers (as transport)
   - [bunyan](https://github.com/trentm/node-bunyan)

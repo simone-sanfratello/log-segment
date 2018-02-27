@@ -1,6 +1,6 @@
 {
   "name": "log-segment",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "logger with partition",
   "main": "main.js",
   "dependencies": {
@@ -11,20 +11,19 @@
     "nodemailer": "^4.x"
   },
   "devDependencies": {
-    "pre-commit": "^x",
+    "standard": "^11.x",
     "tap": "^10.x",
-    "standard": "^x"
+    "tollo": "^0.0.4-dev"
   },
   "engines": {
-    "node": ">6.x"
+    "node": ">=6.x"
   },
   "files": [
     "main.js"
   ],
   "scripts": {
     "test": "standard && tap test/*",
-    "test-cov": "standard && tap test/* --cov",
-    "ci": "standard && tap --cov test/*test.js"
+    "test-cov": "standard && tap test/* --cov"
   },
   "repository": {
     "type": "git",

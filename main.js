@@ -408,6 +408,7 @@ const Log = function (params) {
 
   /**
    * @param {string} message
+   * @return {Promise}
    */
   const __output = function (segment, level, message) {
     // email
@@ -432,22 +433,29 @@ const Log = function (params) {
 
   /**
    * @param {string} message
+   * @return {Promise}
    */
   const __outputConsole = function (message) {
     console.log(message)
-    return true
+    return Promise.resolve()
   }
 
   /**
    * @param {string} file /path/to/file
    * @param {string} message
+   * @return {Promise}
    */
   const __outputFile = function (file, message) {
-    // open stream, if not already opened
-    if (!__files[file]) {
+    return new Promise((resolve, reject) => {
+      if (__files[file]) {
+        __files[file].stream.write(message + '\n')
+        return resolve()
+      }
+
+      // open stream, if not already opened
       fs.ensureFile(file, (err) => {
         if (err) {
-          throw new Error('unable to write', file)
+          return reject(err)
         }
         __files[file] = {
           stream: fs.createWriteStream(file, {flags: 'a', defaultEncoding: 'utf8'}),
@@ -458,51 +466,54 @@ const Log = function (params) {
           }
         }
         process.on('beforeExit', __files[file].onProcessExit)
-        /* debug
-        __files[file].on('finish', function () {
-          console.log('file has been written')
-        })
-        __files[file].on('open', function () {
-          console.log('file has been open')
-        })
-        */
+          /* debug
+          __files[file].on('finish', function () {
+            console.log('file has been written')
+          })
+          __files[file].on('open', function () {
+            console.log('file has been open')
+          })
+          */
         __outputFile(file, message)
+          .then(resolve)
+          .catch(reject)
       })
-      return true
-    }
-
-    __files[file].stream.write(message + '\n')
-    return true
+    })
   }
 
   /**
    * @todo html?
    * @param {*} email
    * @param {string} message
+   * @return {Promise}
    */
   const __outputEmail = function (email, message) {
-    if (!email._transporter) {
-      email._transporter = nodemailer.createTransport(email.transporter)
-    }
-
-    const _options = tools.object.clone(email.options)
-    if (isHtml(message)) {
-      _options.html = message
-    } else {
-      _options.text = message + '\n'
-    }
-
-    email._transporter.sendMail(_options, (err, info) => {
-      if (err) {
-        __outputConsole(['ERROR SENDING EMAIL', _options])
-        __outputConsole(message)
+    return new Promise((resolve, reject) => {
+      if (!email._transporter) {
+        email._transporter = nodemailer.createTransport(email.transporter)
       }
+
+      const _options = tools.object.clone(email.options)
+      if (isHtml(message)) {
+        _options.html = message
+      } else {
+        _options.text = message + '\n'
+      }
+
+      email._transporter.sendMail(_options, (err, info) => {
+        if (err) {
+          __outputConsole(['ERROR SENDING EMAIL', _options])
+          __outputConsole(message)
+          return reject(err)
+        }
+        resolve()
+      })
     })
-    return true
   }
 
   /**
    * @see ./doc/README.md#.check
+   * @return {Promise}
    */
   const check = function () {
     return new Promise((resolve, reject) => {
