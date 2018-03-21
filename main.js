@@ -624,7 +624,7 @@ const Log = function (params) {
   const chrono = function (tag, reset) {
     if (!__chrono[tag] || reset) {
       __chrono[tag] = Date.now()
-      return
+      return '[chrono ' + tag + ' start]'
     }
     return '[' + tag + ' +' + (Date.now() - __chrono[tag]) + ' ms]'
   }
