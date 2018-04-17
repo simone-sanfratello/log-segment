@@ -1,5 +1,3 @@
-'use strict'
-
 const tools = require('a-toolbox')
 const chalk = require('chalk')
 const fs = require('fs-extra')
@@ -348,7 +346,7 @@ const Log = function (params) {
         }
         // add segment color
         // paint the message
-        return __color(segment, message)
+        return __color(segment, level, message)
       })
 
       // add marker
@@ -356,15 +354,15 @@ const Log = function (params) {
         _data.marker = __markers[level]
       }
 
-      return __output(segment, level, __color(segment, __format(segment, level, _data)))
+      return __output(segment, level, __color(segment, level, __format(segment, level, _data)))
     }
   }
 
-  const __color = function (segment, message) {
+  const __color = function (segment, level, message) {
     if (__segments[segment] &&
       __segments[segment].color &&
-      __segments[segment].mode !== mode.EMAIL &&
-      __segments[segment].mode !== mode.FILE &&
+      __levels[level].mode !== mode.EMAIL &&
+      __levels[level].mode !== mode.FILE &&
       chalk[__segments[segment].color]) {
       return chalk[__segments[segment].color](message)
     }
