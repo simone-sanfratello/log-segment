@@ -468,14 +468,14 @@ const Log = function (params) {
           }
         }
         process.on('beforeExit', __files[file].onProcessExit)
-          /* debug
-          __files[file].on('finish', function () {
-            console.log('file has been written')
-          })
-          __files[file].on('open', function () {
-            console.log('file has been open')
-          })
-          */
+        /* debug
+        __files[file].on('finish', function () {
+          console.log('file has been written')
+        })
+        __files[file].on('open', function () {
+          console.log('file has been open')
+        })
+        */
         __outputFile(file, message)
           .then(resolve)
           .catch(reject)
