@@ -363,6 +363,8 @@ const Log = function (params) {
   const __color = function (segment, message) {
     if (__segments[segment] &&
       __segments[segment].color &&
+      __segments[segment].mode !== mode.EMAIL &&
+      __segments[segment].mode !== mode.FILE &&
       chalk[__segments[segment].color]) {
       return chalk[__segments[segment].color](message)
     }
