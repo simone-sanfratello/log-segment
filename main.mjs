@@ -1,8 +1,4 @@
 const tools = require('a-toolbox')
-const chalk = require('chalk')
-const fs = require('fs-extra')
-const nodemailer = require('nodemailer')
-const isHtml = require('is-html')
 
 // ? Error.stackTraceLimit = Infinity;
 
@@ -658,4 +654,4 @@ const Log = function (params) {
 
 const log = new Log()
 
-module.exports = log
+export default log
