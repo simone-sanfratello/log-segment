@@ -1,0 +1,27 @@
+<script src="../dist/log-segment.min.js"></script>
+<script>
+  log.set({
+  segments: {
+    http: {
+      color: 'yellow'
+    },
+    sql: {
+      color: 'white'
+    }
+  },
+  levels: {
+    trace: {
+      marker: '[TRACE]'
+    },
+    warning: {
+      marker: '[WARN]'
+    },
+    error: {
+      marker: '[ERR]'
+    }
+  }
+})
+
+console.log(log.get())
+
+</script>
