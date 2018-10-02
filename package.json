@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "pre-commit": "^1.2.2",
-    "standard": "^11.0.1",
-    "tap": "^10.x",
+    "standard": "^12",
+    "tap": "^11",
     "tollo": "^0.0.4-dev"
   },
   "engines": {
@@ -24,7 +24,8 @@
   ],
   "scripts": {
     "test": "standard && tap test/*",
-    "test-cov": "standard && tap test/* --cov"
+    "test-cov": "standard && tap test/* --cov",
+    "build": "lyo"
   },
   "repository": {
     "type": "git",
